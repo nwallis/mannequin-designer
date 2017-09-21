@@ -184,27 +184,26 @@ $(function() {
 
         }
     }, {
+
         markup: $.trim($("#question-template").html()),
         optionMarkup: $.trim($("#option-template").html()),
         triggerMarkup: $.trim($("#trigger-template").html()),
-        initialize: function() {
 
+        initialize: function() {
             joint.dia.Element.prototype.initialize.apply(this, arguments);
+            this.on('change:triggers', this.onChangeTriggers, this);
             this.on('change:options', this.onChangeOptions, this);
             this.on('change:question', function() {
                 this.attr('.question-text/text', this.get('question') || '');
                 this.autoresize();
             }, this);
-
             this.on('change:questionHeight', function() {
                 this.attr('.options/ref-y', this.get('questionHeight'), {
                     silent: true
                 });
                 this.autoresize();
             }, this);
-
             this.on('change:optionHeight', this.autoresize, this);
-
             this.attr('.options/ref-y', this.get('questionHeight'), {
                 silent: true
             });
@@ -213,31 +212,83 @@ $(function() {
             });
         },
 
-        onChangeOptions: function() {
-
-            var options = this.get('options');
+        onChangeTriggers: function() {
+            //Get values from model to keep code get() free
+            var triggers = this.get('triggers');
             var optionHeight = this.get('optionHeight');
-
-            // First clean up the previously set attrs for the old options object.
-            // We mark every new attribute object with the `dynamic` flag set to `true`.
-            // This is how we recognize previously set attributes.
             var attrs = this.get('attrs');
-            _.each(attrs, function(attrs, selector) {
+            var questionHeight = this.get('questionHeight');
+            console.log(this.get('options').length);
+            var offsetY = 100 + (this.get('options').length * optionHeight + 20);
+            var attrsUpdate = {};
 
+            //iterate attributes for each selector
+            _.each(attrs, function(attrs, selector) {
                 if (attrs.dynamic) {
-                    // Remove silently because we're going to update `attrs`
-                    // later in this method anyway.
                     this.removeAttr(selector, {
                         silent: true
                     });
                 }
             }, this);
 
-            // Collect new attrs for the new options.
+            // Collect new attrs for the new options - marking them as dynamic for potential cleanup
+            _.each(triggers, function(trigger) {
+
+                var selector = '.trigger-' + trigger.id;
+
+                attrsUpdate[selector] = {
+                    transform: 'translate(0, ' + offsetY + ')',
+                    dynamic: true
+                };
+                attrsUpdate[selector + ' .option-rect'] = {
+                    height: optionHeight,
+                    dynamic: true
+                };
+                attrsUpdate[selector + ' .option-text'] = {
+                    text: trigger.text,
+                    dynamic: true
+                };
+
+                offsetY += optionHeight;
+                var portY = offsetY - optionHeight / 2 + questionHeight;
+                if (!this.getPort(trigger.id)) {
+                    this.addPort({
+                        group: 'out',
+                        id: trigger.id,
+                        args: {
+                            y: portY
+                        }
+                    });
+                } else {
+                    this.portProp(trigger.id, 'args/y', portY);
+                }
+
+            }, this);
+
+            this.attr(attrsUpdate);
+            this.autoresize();
+        },
+
+        onChangeOptions: function() {
+
+            //Get values from model to keep code get() free
+            var options = this.get('options');
+            var optionHeight = this.get('optionHeight');
+            var attrs = this.get('attrs');
+            var questionHeight = this.get('questionHeight');
             var offsetY = 0;
             var attrsUpdate = {};
-            var questionHeight = this.get('questionHeight');
 
+            //iterate attributes for each selector
+            _.each(attrs, function(attrs, selector) {
+                if (attrs.dynamic) {
+                    this.removeAttr(selector, {
+                        silent: true
+                    });
+                }
+            }, this);
+
+            // Collect new attrs for the new options - marking them as dynamic for potential cleanup
             _.each(options, function(option) {
 
                 var selector = '.option-' + option.id;
@@ -256,10 +307,7 @@ $(function() {
                 };
 
                 offsetY += optionHeight;
-
                 var portY = offsetY - optionHeight / 2 + questionHeight;
-
-                //Create port / update port
                 if (!this.getPort(option.id)) {
                     this.addPort({
                         group: 'out',
@@ -273,7 +321,7 @@ $(function() {
                 }
 
             }, this);
-            console.log(attrsUpdate);
+
             this.attr(attrsUpdate);
             this.autoresize();
         },

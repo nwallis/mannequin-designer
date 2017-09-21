@@ -77,34 +77,36 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     },
 
     initialize: function() {
-
         joint.dia.ElementView.prototype.initialize.apply(this, arguments);
         this.listenTo(this.model, 'change:options', this.renderOptions, this);
+        this.listenTo(this.model, 'change:triggers', this.renderTriggers, this);
     },
 
     renderMarkup: function() {
-
         joint.dia.ElementView.prototype.renderMarkup.apply(this, arguments);
         this.renderOptions();
         this.renderTriggers();
     },
 
     renderTriggers: function() {
-
+        var $triggerContainer = this.$('.triggers');
+        $triggerContainer.empty();
+        _.each(this.model.get('triggers'), function(trigger, index) {
+            var triggerHelper = V(this.model.triggerMarkup).addClass('trigger-' + trigger.id);
+            triggerHelper.attr('trigger-id', trigger.id);
+            $triggerContainer.append(triggerHelper.node);
+        }, this);
+        this.update();
     },
 
     renderOptions: function() {
-
         var $optionContainer = this.$('.options');
         $optionContainer.empty();
-
         _.each(this.model.get('options'), function(option, index) {
             var optionHelper = V(this.model.optionMarkup).addClass('option-' + option.id);
             optionHelper.attr('option-id', option.id);
             $optionContainer.append(optionHelper.node);
         }, this);
-
-        // Apply `attrs` to the newly created SVG elements.
         this.update();
     },
 
@@ -116,6 +118,9 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     },
     onRemoveModifier: function(evt) {
         this.model.removeModifier(V(evt.target.parentNode).attr('option-id'));
+    },
+    onRemoveTrigger: function(evt) {
+        this.model.removeTrigger(V(evt.target.parentNode).attr('trigger-id'));
     }
 
 });
