@@ -186,6 +186,7 @@ $(function() {
     }, {
         markup: $.trim($("#question-template").html()),
         optionMarkup: $.trim($("#option-template").html()),
+        triggerMarkup: $.trim($("#trigger-template").html()),
         initialize: function() {
 
             joint.dia.Element.prototype.initialize.apply(this, arguments);
@@ -257,6 +258,8 @@ $(function() {
                 offsetY += optionHeight;
 
                 var portY = offsetY - optionHeight / 2 + questionHeight;
+
+                //Create port / update port
                 if (!this.getPort(option.id)) {
                     this.addPort({
                         group: 'out',
@@ -268,14 +271,15 @@ $(function() {
                 } else {
                     this.portProp(option.id, 'args/y', portY);
                 }
-            }, this);
 
+            }, this);
+            console.log(attrsUpdate);
             this.attr(attrsUpdate);
             this.autoresize();
         },
         autoresize: function() {
             var options = this.get('options');
-            //var triggers = this.get('triggers');
+            var triggers = this.get('triggers');
             var gap = this.get('paddingBottom') || 20;
             var height = options.length * this.get('optionHeight') + this.get('questionHeight') + gap;
             var width = joint.util.measureText(this.get('question'), {

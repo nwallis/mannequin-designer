@@ -39,13 +39,11 @@ app.AppView = Backbone.View.extend({
     },
 
     initialize: function() {
-
         this.initializePaper();
         this.initializeSelection();
         this.initializeHalo();
         this.initializeInlineTextEditor();
         this.initializeTooltips();
-
         //this.loadExample();
     },
 

@@ -85,27 +85,23 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     renderMarkup: function() {
 
         joint.dia.ElementView.prototype.renderMarkup.apply(this, arguments);
-
-        // A holder for all the options.
-        this.$options = this.$('.options');
-        // Create an SVG element representing one option. This element will
-        // be cloned in order to create more options.
-        this.elOption = V(this.model.optionMarkup);
-
         this.renderOptions();
+        this.renderTriggers();
+    },
+
+    renderTriggers: function() {
+
     },
 
     renderOptions: function() {
 
-        this.$options.empty();
+        var $optionContainer = this.$('.options');
+        $optionContainer.empty();
 
         _.each(this.model.get('options'), function(option, index) {
-
-            var className = 'option-' + option.id;
-            var elOption = this.elOption.clone().addClass(className);
-            elOption.attr('option-id', option.id);
-            this.$options.append(elOption.node);
-
+            var optionHelper = V(this.model.optionMarkup).addClass('option-' + option.id);
+            optionHelper.attr('option-id', option.id);
+            $optionContainer.append(optionHelper.node);
         }, this);
 
         // Apply `attrs` to the newly created SVG elements.
