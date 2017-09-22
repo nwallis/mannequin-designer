@@ -45,7 +45,7 @@ $(function() {
 
         optionHeight: 30,
         questionHeight: 50,
-        paddingBottom: 30,
+        paddingBottom: 20,
         minWidth: 150,
         ports: {
             groups: {
@@ -143,11 +143,20 @@ $(function() {
                 cursor: 'pointer',
                 fill: 'white'
             },
+            '.btn-remove-trigger': {
+                'x-alignment': 10,
+                'y-alignment': 13,
+                cursor: 'pointer',
+                fill: 'white'
+            },
             '.options': {
                 ref: '.body',
                 'ref-x': 0
             },
-
+            '.triggers': {
+                ref: '.body',
+                'ref-x': 0
+            },
             // Text styling.
             text: {
                 'font-family': 'Arial'
@@ -180,19 +189,31 @@ $(function() {
                 fill: 'white',
                 ref: '.body',
                 'ref-width': 1
+            },
+
+            '.trigger-bg-rect': {
+                rx: 3,
+                ry: 3,
+                stroke: 'white',
+                'stroke-width': 1,
+                'stroke-opacity': .5,
+                'fill-opacity': .5,
+                fill: 'green',
+                ref: '.body',
+                'ref-width': 1
             }
 
         }
     }, {
 
         markup: $.trim($("#question-template").html()),
-        optionMarkup: $.trim($("#option-template").html()),
+        optionMarkup: $.trim($("#modifier-template").html()),
         triggerMarkup: $.trim($("#trigger-template").html()),
 
         initialize: function() {
             joint.dia.Element.prototype.initialize.apply(this, arguments);
-            this.on('change:triggers', this.onChangeTriggers, this);
-            this.on('change:options', this.onChangeOptions, this);
+            this.on('change:triggers', this.onElementsAdded, this);
+            this.on('change:options', this.onElementsAdded, this);
             this.on('change:question', function() {
                 this.attr('.question-text/text', this.get('question') || '');
                 this.autoresize();
@@ -218,39 +239,38 @@ $(function() {
             var optionHeight = this.get('optionHeight');
             var attrs = this.get('attrs');
             var questionHeight = this.get('questionHeight');
-            console.log(this.get('options').length);
-            var offsetY = 100 + (this.get('options').length * optionHeight + 20);
+            var offsetY = (this.get('options').length * optionHeight) + ((this.get('options').length > 0) ? 70 : 50);
             var attrsUpdate = {};
 
             //iterate attributes for each selector
             _.each(attrs, function(attrs, selector) {
-                if (attrs.dynamic) {
+                if (attrs.dynamicmodifier) {
                     this.removeAttr(selector, {
                         silent: true
                     });
                 }
             }, this);
 
-            // Collect new attrs for the new options - marking them as dynamic for potential cleanup
+            // Collect new attrs for the new options - marking them as dynamicmodifier for potential cleanup
             _.each(triggers, function(trigger) {
 
                 var selector = '.trigger-' + trigger.id;
 
                 attrsUpdate[selector] = {
                     transform: 'translate(0, ' + offsetY + ')',
-                    dynamic: true
+                    dynamicmodifier: true
                 };
-                attrsUpdate[selector + ' .option-rect'] = {
+                attrsUpdate[selector + ' .trigger-bg-rect'] = {
                     height: optionHeight,
-                    dynamic: true
+                    dynamicmodifier: true
                 };
                 attrsUpdate[selector + ' .option-text'] = {
                     text: trigger.text,
-                    dynamic: true
+                    dynamicmodifier: true
                 };
 
                 offsetY += optionHeight;
-                var portY = offsetY - optionHeight / 2 + questionHeight;
+                var portY = offsetY - optionHeight / 2; // + questionHeight;
                 if (!this.getPort(trigger.id)) {
                     this.addPort({
                         group: 'out',
@@ -266,6 +286,11 @@ $(function() {
             }, this);
 
             this.attr(attrsUpdate);
+        },
+
+        onElementsAdded: function() {
+            this.onChangeOptions();
+            this.onChangeTriggers();
             this.autoresize();
         },
 
@@ -281,7 +306,7 @@ $(function() {
 
             //iterate attributes for each selector
             _.each(attrs, function(attrs, selector) {
-                if (attrs.dynamic) {
+                if (attrs.dynamicoption) {
                     this.removeAttr(selector, {
                         silent: true
                     });
@@ -295,48 +320,36 @@ $(function() {
 
                 attrsUpdate[selector] = {
                     transform: 'translate(0, ' + offsetY + ')',
-                    dynamic: true
+                    dynamicoption: true
                 };
                 attrsUpdate[selector + ' .option-rect'] = {
                     height: optionHeight,
-                    dynamic: true
+                    dynamicoption: true
                 };
                 attrsUpdate[selector + ' .option-text'] = {
                     text: option.text,
-                    dynamic: true
+                    dynamicoption: true
                 };
 
                 offsetY += optionHeight;
-                var portY = offsetY - optionHeight / 2 + questionHeight;
-                if (!this.getPort(option.id)) {
-                    this.addPort({
-                        group: 'out',
-                        id: option.id,
-                        args: {
-                            y: portY
-                        }
-                    });
-                } else {
-                    this.portProp(option.id, 'args/y', portY);
-                }
 
             }, this);
 
             this.attr(attrsUpdate);
-            this.autoresize();
         },
         autoresize: function() {
             var options = this.get('options');
             var triggers = this.get('triggers');
             var gap = this.get('paddingBottom') || 20;
             var height = options.length * this.get('optionHeight') + this.get('questionHeight') + gap;
+            height += triggers.length * this.get('optionHeight') + (gap * 2);
             var width = joint.util.measureText(this.get('question'), {
                 fontSize: this.attr('.question-text/font-size')
             }).width;
             this.resize(Math.max(this.get('minWidth') || 150, width), height);
         },
         addModifier: function(option) {
-            var options = JSON.parse(JSON.stringify(this.get('options')));
+            var options = this.get('options');
             options.push({
                 id: _.uniqueId('option-'),
                 text: 'Option ' + options.length
@@ -344,35 +357,34 @@ $(function() {
             this.set('options', options);
         },
         addTrigger: function() {
-            var triggers = JSON.parse(JSON.stringify(this.get('triggers')));
+            var triggers = this.get('triggers');
             triggers.push({
                 id: _.uniqueId('trigger-'),
                 text: 'Trigger' + triggers.length
             });
             this.set('triggers', triggers);
         },
-        removeModifier: function(id) {
-            var options = JSON.parse(JSON.stringify(this.get('options')));
+        removeElementById: function(id, storage_key) {
+            data_store = this.get(storage_key);
             this.removePort(id);
-            this.set('options', _.without(options, _.findWhere(options, {
+            return _.without(data_store, _.findWhere(data_store, {
                 id: id
-            })));
+            }));
+        },
+        removeModifier: function(id) {
+            this.set('options', this.removeElementById(id, 'options'));
         },
         removeTrigger: function(id) {
-            var triggers = JSON.parse(JSON.stringify(this.get('triggers')));
-            this.removePort(id);
-            this.set('options', _.without(options, _.findWhere(options, {
-                id: id
-            })));
+            this.set('triggers', this.removeElementById(id, 'triggers'));
         },
-        changeOption: function(id, option) {
-            if (!option.id) option.id = id;
-            var options = JSON.parse(JSON.stringify(this.get('options')));
-            options[_.findIndex(options, {
-                id: id
-            })] = option;
-            this.set('options', options);
-        }
+        /*changeOption: function(id, option) {
+              if (!option.id) option.id = id;
+              var options = JSON.parse(JSON.stringify(this.get('options')));
+              options[_.findIndex(options, {
+                  id: id
+              })] = option;
+              this.set('options', options);
+          }*/
     });
 
     window.appView = new app.AppView;
