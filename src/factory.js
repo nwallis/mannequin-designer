@@ -15,6 +15,13 @@ var app = app || {};
 
 app.Factory = {
 
+    createModifier: function(text) {
+        var q = new joint.shapes.qad.Modifier({
+            question: text
+        });
+        return q;
+    },
+
     createQuestion: function(text) {
 
         var q = new joint.shapes.qad.Question({

@@ -372,8 +372,11 @@ $(function() {
         removeTrigger: function(id) {
             this.set('triggers', this.removeElementById(id, 'triggers'))
         },
+        getDataStoreCopy: function(storage_key) {
+            return JSON.parse(JSON.stringify(this.get(storage_key)));
+        },
         addElement: function(storage_key, placeholder_name) {
-            var data_store = JSON.parse(JSON.stringify(this.get(storage_key)));
+            var data_store = this.getDataStoreCopy(storage_key);
             data_store.push({
                 id: _.uniqueId(storage_key + '-'),
                 text: placeholder_name + ' ' + data_store.length

@@ -48,6 +48,13 @@ joint.util.measureText = function(text, attrs) {
     };
 };
 
+joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
+    initialize: function() {
+        console.log("init modifier view");
+    },
+    autoresize: function() {}
+});
+
 joint.shapes.qad.AnswerView = joint.dia.ElementView.extend({
 
     initialize: function() {
