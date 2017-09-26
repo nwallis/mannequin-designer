@@ -17,6 +17,40 @@ var app = app || {};
 
 $(function() {
 
+    joint.dia.Element.define('qad.Modifier', {
+        attrs: {
+            '.options': {
+                ref: '.body',
+                'ref-x': 0
+            },
+            '.option-text': {
+                'font-size': 11,
+                fill: '#4b4a67',
+                'y-alignment': .7,
+                'x-alignment': 30
+            },
+            '.option-rect': {
+                rx: 3,
+                ry: 3,
+                stroke: 'white',
+                'stroke-width': 1,
+                'stroke-opacity': .5,
+                'fill-opacity': .5,
+                fill: 'white',
+                ref: '.body',
+                'ref-width': 1
+            },
+            '.btn-remove-modifier': {
+                'x-alignment': 10,
+                'y-alignment': 13,
+                cursor: 'pointer',
+                fill: 'white'
+            }
+        }
+    }, {
+        markup: $.trim($("#modifier-template").html())
+    });
+
     joint.dia.Element.define('qad.Answer', {
         attrs: {
             'rect': {
@@ -122,7 +156,6 @@ $(function() {
                     }
                 }
             },
-            //Add option always sits at the bottom of the body
             '.btn-add-modifier': {
                 ref: '.body',
                 'ref-x': 10,
@@ -137,21 +170,11 @@ $(function() {
                 cursor: 'pointer',
                 fill: 'blue'
             },
-            '.btn-remove-modifier': {
-                'x-alignment': 10,
-                'y-alignment': 13,
-                cursor: 'pointer',
-                fill: 'white'
-            },
             '.btn-remove-trigger': {
                 'x-alignment': 10,
                 'y-alignment': 13,
                 cursor: 'pointer',
                 fill: 'white'
-            },
-            '.options': {
-                ref: '.body',
-                'ref-x': 0
             },
             '.triggers': {
                 ref: '.body',
@@ -160,12 +183,6 @@ $(function() {
             // Text styling.
             text: {
                 'font-family': 'Arial'
-            },
-            '.option-text': {
-                'font-size': 11,
-                fill: '#4b4a67',
-                'y-alignment': .7,
-                'x-alignment': 30
             },
             '.question-text': {
                 fill: 'white',
@@ -179,18 +196,6 @@ $(function() {
             },
 
             // Options styling.
-            '.option-rect': {
-                rx: 3,
-                ry: 3,
-                stroke: 'white',
-                'stroke-width': 1,
-                'stroke-opacity': .5,
-                'fill-opacity': .5,
-                fill: 'white',
-                ref: '.body',
-                'ref-width': 1
-            },
-
             '.trigger-bg-rect': {
                 rx: 3,
                 ry: 3,
