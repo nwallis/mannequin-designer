@@ -49,23 +49,29 @@ joint.util.measureText = function(text, attrs) {
 };
 
 joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
-    initialize: function() {
-        console.log("init modifier view");
+
+    events: {
+        'click .btn-remove-modifier': 'onRemoveModifier',
     },
-    autoresize: function() {}
+    initialize: function(e) {
+        joint.dia.ElementView.prototype.initialize.apply(this, arguments);
+        this.listenTo(this.model, 'change:parent', this.autoresize, this);
+    },
+    autoresize: function() {
+        var parentBounds = this.model.graph.getCell(this.model.attributes.parent).getBBox();
+        console.log(parentBounds);
+        this.model.resize(parentBounds.width, 20);
+    }
 });
 
 joint.shapes.qad.AnswerView = joint.dia.ElementView.extend({
-
     initialize: function() {
 
         joint.dia.ElementView.prototype.initialize.apply(this, arguments);
         this.autoresize();
         this.listenTo(this.model, 'change:answer', this.autoresize, this);
     },
-
     autoresize: function() {
-
         var dim = joint.util.measureText(this.model.get('answer'), {
             fontSize: this.model.attr('text/font-size')
         });
@@ -78,15 +84,15 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
 
     events: {
         'click .btn-add-modifier': 'onAddModifier',
-        'click .btn-remove-modifier': 'onRemoveModifier',
         'click .btn-add-trigger': 'onAddTrigger',
         'click .btn-remove-trigger': 'onRemoveTrigger'
     },
 
     initialize: function() {
         joint.dia.ElementView.prototype.initialize.apply(this, arguments);
-        this.listenTo(this.model, 'change:options', this.renderOptions, this);
-        this.listenTo(this.model, 'change:triggers', this.renderTriggers, this);
+        this.listenTo(this.model, 'change:embeds', this.renderOptions, this);
+        //this.listenTo(this.model, 'change:options', this.renderOptions, this);
+        //this.listenTo(this.model, 'change:triggers', this.renderTriggers, this);
     },
 
     renderMarkup: function() {
@@ -107,14 +113,15 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     },
 
     renderOptions: function() {
-        var $optionContainer = this.$('.options');
-        $optionContainer.empty();
-        _.each(this.model.get('options'), function(option, index) {
-            var optionHelper = V(this.model.optionMarkup).addClass('option-' + option.id);
-            optionHelper.attr('option-id', option.id);
-            $optionContainer.append(optionHelper.node);
+        var options = this.model.get('options');
+        var optionHeight = this.model.get('optionHeight');
+        var offsetY = (options.length * optionHeight) + ((options.length > 0) ? 70 : 50);
+        _.each(options, function(option) {
+            option.position(0, offsetY, {
+                parentRelative: true
+            });
+            offsetY += optionHeight;
         }, this);
-        this.update();
     },
 
     onAddTrigger: function() {

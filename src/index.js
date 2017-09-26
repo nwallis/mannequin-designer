@@ -19,9 +19,19 @@ $(function() {
 
     joint.dia.Element.define('qad.Modifier', {
         attrs: {
-            '.options': {
-                ref: '.body',
-                'ref-x': 0
+            '.btn-remove-modifier': {
+                'x-alignment': 10,
+                'y-alignment': 13,
+                cursor: 'pointer',
+                fill: 'black'
+            },
+            '.option-rect': {
+                fill: '#4b4a67',
+                stroke: 'none',
+                width: 100,
+                height: 60,
+                rx: 3,
+                ry: 3
             },
             '.option-text': {
                 'font-size': 11,
@@ -29,26 +39,9 @@ $(function() {
                 'y-alignment': .7,
                 'x-alignment': 30
             },
-            '.option-rect': {
-                rx: 3,
-                ry: 3,
-                stroke: 'white',
-                'stroke-width': 1,
-                'stroke-opacity': .5,
-                'fill-opacity': .5,
-                fill: 'white',
-                ref: '.body',
-                'ref-width': 1
-            },
-            '.btn-remove-modifier': {
-                'x-alignment': 10,
-                'y-alignment': 13,
-                cursor: 'pointer',
-                fill: 'white'
-            }
         }
     }, {
-        markup: $.trim($("#modifier-template").html())
+        markup: $.trim($("#modifier-template").html()),
     });
 
     joint.dia.Element.define('qad.Answer', {
@@ -131,6 +124,10 @@ $(function() {
         attrs: {
             '.': {
                 magnet: false
+            },
+            '.options': {
+                ref: '.body',
+                'ref-x': 0
             },
             '.body': {
                 width: 150,
@@ -217,8 +214,8 @@ $(function() {
 
         initialize: function() {
             joint.dia.Element.prototype.initialize.apply(this, arguments);
-            this.on('change:triggers', this.onElementsAdded, this);
-            this.on('change:options', this.onElementsAdded, this);
+            this.listenTo(this, 'change:options', this.onElementsAdded, this);
+            this.listenTo(this, 'change:triggers', this.onElementsAdded, this);
             this.on('change:question', function() {
                 this.attr('.question-text/text', this.get('question') || '');
                 this.autoresize();
@@ -294,55 +291,11 @@ $(function() {
         },
 
         onElementsAdded: function() {
-            this.onChangeOptions();
+            //this.onChangeOptions();
             this.onChangeTriggers();
             this.autoresize();
         },
 
-        onChangeOptions: function() {
-
-            //Get values from model to keep code get() free
-            var options = this.get('options');
-            var optionHeight = this.get('optionHeight');
-            var attrs = this.get('attrs');
-            var questionHeight = this.get('questionHeight');
-            var offsetY = 0;
-            var attrsUpdate = {};
-
-            //iterate attributes for each selector
-            _.each(attrs, function(attrs, selector) {
-                if (attrs.dynamicOption) {
-                    this.removeAttr(selector, {
-                        silent: true
-                    });
-                }
-            }, this);
-
-            // Collect new attrs for the new options - marking them as dynamic for potential cleanup
-            _.each(options, function(option) {
-
-                var selector = '.option-' + option.id;
-
-                attrsUpdate[selector] = {
-                    transform: 'translate(0, ' + offsetY + ')',
-                    dynamicOption: true
-                };
-                attrsUpdate[selector + ' .option-rect'] = {
-                    height: optionHeight,
-                    dynamicOption: true
-                };
-                attrsUpdate[selector + ' .option-text'] = {
-                    text: option.text,
-                    dynamicOption: true
-                };
-
-                offsetY += optionHeight;
-
-            }, this);
-
-            this.attr(attrsUpdate);
-        },
-        //refactor - calc the size based on elements inside - if embeds are successfully used, then this should be fine
         autoresize: function() {
             var options = this.get('options');
             var triggers = this.get('triggers');
@@ -354,13 +307,14 @@ $(function() {
             }).width;
             this.resize(Math.max(this.get('minWidth') || 150, width), height);
         },
-        addModifier: function(option) {
+        addModifier: function() {
             var data_store = this.getDataStoreCopy('options');
-            var new_modifier = app.Factory.createModifier(_.uniqueId("options-"), "Modifier " + data_store.length);
+            var new_modifier = app.Factory.createModifier(_.uniqueId(), "Modifier " + data_store.length);
             data_store.push(new_modifier);
-            this.embed(new_modifier);
-            this.graph.addCell(new_modifier);
             this.set('options', data_store);
+            this.autoresize(); //size the question view
+            this.graph.addCell(new_modifier); //add to graph
+            this.embed(new_modifier);
         },
         addTrigger: function() {
             this.addElement('triggers', 'Trigger');
