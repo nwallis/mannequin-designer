@@ -15,9 +15,10 @@ var app = app || {};
 
 app.Factory = {
 
-    createModifier: function(text) {
+    createModifier: function(id, text) {
         var q = new joint.shapes.qad.Modifier({
-            question: text
+            id: id,
+            text: text
         });
         return q;
     },

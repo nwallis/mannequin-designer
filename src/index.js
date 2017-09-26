@@ -311,7 +311,7 @@ $(function() {
 
             //iterate attributes for each selector
             _.each(attrs, function(attrs, selector) {
-                if (attrs.dynamicoption) {
+                if (attrs.dynamicOption) {
                     this.removeAttr(selector, {
                         silent: true
                     });
@@ -325,15 +325,15 @@ $(function() {
 
                 attrsUpdate[selector] = {
                     transform: 'translate(0, ' + offsetY + ')',
-                    dynamicoption: true
+                    dynamicOption: true
                 };
                 attrsUpdate[selector + ' .option-rect'] = {
                     height: optionHeight,
-                    dynamicoption: true
+                    dynamicOption: true
                 };
                 attrsUpdate[selector + ' .option-text'] = {
                     text: option.text,
-                    dynamicoption: true
+                    dynamicOption: true
                 };
 
                 offsetY += optionHeight;
@@ -342,6 +342,7 @@ $(function() {
 
             this.attr(attrsUpdate);
         },
+        //refactor - calc the size based on elements inside - if embeds are successfully used, then this should be fine
         autoresize: function() {
             var options = this.get('options');
             var triggers = this.get('triggers');
@@ -354,7 +355,12 @@ $(function() {
             this.resize(Math.max(this.get('minWidth') || 150, width), height);
         },
         addModifier: function(option) {
-            this.addElement('options', 'Modifier');
+            var data_store = this.getDataStoreCopy('options');
+            var new_modifier = app.Factory.createModifier(_.uniqueId("options-"), "Modifier " + data_store.length);
+            data_store.push(new_modifier);
+            this.embed(new_modifier);
+            this.graph.addCell(new_modifier);
+            this.set('options', data_store);
         },
         addTrigger: function() {
             this.addElement('triggers', 'Trigger');
