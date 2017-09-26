@@ -54,13 +54,13 @@ joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
         'click .btn-remove-modifier': 'onRemoveModifier',
     },
     initialize: function(e) {
+        console.log("initing view for modifier");
         joint.dia.ElementView.prototype.initialize.apply(this, arguments);
         this.listenTo(this.model, 'change:parent', this.autoresize, this);
     },
     autoresize: function() {
         var parentBounds = this.model.graph.getCell(this.model.attributes.parent).getBBox();
-        console.log(parentBounds);
-        this.model.resize(parentBounds.width, 20);
+        this.model.resize(parentBounds.width, 30);
     }
 });
 
@@ -90,37 +90,36 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
 
     initialize: function() {
         joint.dia.ElementView.prototype.initialize.apply(this, arguments);
-        this.listenTo(this.model, 'change:embeds', this.renderOptions, this);
-        //this.listenTo(this.model, 'change:options', this.renderOptions, this);
-        //this.listenTo(this.model, 'change:triggers', this.renderTriggers, this);
+        this.listenTo(this.model, 'change:embeds', this.layoutChildren, this);
     },
 
-    renderMarkup: function() {
-        joint.dia.ElementView.prototype.renderMarkup.apply(this, arguments);
-        this.renderOptions();
+    layoutChildren: function() {
+        this.renderModifiers();
         this.renderTriggers();
     },
 
     renderTriggers: function() {
-        var $triggerContainer = this.$('.triggers');
-        $triggerContainer.empty();
-        _.each(this.model.get('triggers'), function(trigger, index) {
-            var triggerHelper = V(this.model.triggerMarkup).addClass('trigger-' + trigger.id);
-            triggerHelper.attr('trigger-id', trigger.id);
-            $triggerContainer.append(triggerHelper.node);
-        }, this);
-        this.update();
+        /*    var $triggerContainer = this.$('.triggers');
+          $triggerContainer.empty();
+          _.each(this.model.get('triggers'), function(trigger, index) {
+              var triggerHelper = V(this.model.triggerMarkup).addClass('trigger-' + trigger.id);
+              triggerHelper.attr('trigger-id', trigger.id);
+              $triggerContainer.append(triggerHelper.node);
+          }, this);
+          this.update();*/
     },
 
-    renderOptions: function() {
+    renderModifiers: function() {
         var options = this.model.get('options');
         var optionHeight = this.model.get('optionHeight');
-        var offsetY = (options.length * optionHeight) + ((options.length > 0) ? 70 : 50);
+        var offsetY = (options.length * optionHeight) + ((options.length > 0) ? 50 : 30);
         _.each(options, function(option) {
-            option.position(0, offsetY, {
-                parentRelative: true
-            });
-            offsetY += optionHeight;
+            if (typeof(option.position) == "function") {
+                option.position(0, offsetY, {
+                    parentRelative: true
+                });
+                offsetY += optionHeight;
+            }
         }, this);
     },
 

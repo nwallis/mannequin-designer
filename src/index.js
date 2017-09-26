@@ -1,18 +1,3 @@
-/*! Rappid v2.1.0 - HTML5 Diagramming Framework - TRIAL VERSION
-
-Copyright (c) 2015 client IO
-
- 2017-09-14 
-
-
-This Source Code Form is subject to the terms of the Rappid Trial License
-, v. 2.0. If a copy of the Rappid License was not distributed with this
-file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
- or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
-
-
-// @import app.js
-
 var app = app || {};
 
 $(function() {
@@ -214,8 +199,8 @@ $(function() {
 
         initialize: function() {
             joint.dia.Element.prototype.initialize.apply(this, arguments);
-            this.listenTo(this, 'change:options', this.onElementsAdded, this);
-            this.listenTo(this, 'change:triggers', this.onElementsAdded, this);
+            //this.listenTo(this, 'change:options', this.onElementsAdded, this);
+            // this.listenTo(this, 'change:triggers', this.onElementsAdded, this);
             this.on('change:question', function() {
                 this.attr('.question-text/text', this.get('question') || '');
                 this.autoresize();
@@ -290,12 +275,6 @@ $(function() {
             this.attr(attrsUpdate);
         },
 
-        onElementsAdded: function() {
-            //this.onChangeOptions();
-            this.onChangeTriggers();
-            this.autoresize();
-        },
-
         autoresize: function() {
             var options = this.get('options');
             var triggers = this.get('triggers');
@@ -308,10 +287,8 @@ $(function() {
             this.resize(Math.max(this.get('minWidth') || 150, width), height);
         },
         addModifier: function() {
-            var data_store = this.getDataStoreCopy('options');
-            var new_modifier = app.Factory.createModifier(_.uniqueId(), "Modifier " + data_store.length);
-            data_store.push(new_modifier);
-            this.set('options', data_store);
+            var new_modifier = app.Factory.createModifier(_.uniqueId(), "Modifier " + this.get('options').length);
+            this.addElementToStore('options', new_modifier);
             this.autoresize(); //size the question view
             this.graph.addCell(new_modifier); //add to graph
             this.embed(new_modifier);
@@ -335,12 +312,9 @@ $(function() {
         getDataStoreCopy: function(storage_key) {
             return JSON.parse(JSON.stringify(this.get(storage_key)));
         },
-        addElement: function(storage_key, placeholder_name) {
+        addElementToStore: function(storage_key, item) {
             var data_store = this.getDataStoreCopy(storage_key);
-            data_store.push({
-                id: _.uniqueId(storage_key + '-'),
-                text: placeholder_name + ' ' + data_store.length
-            });
+            data_store.push(item);
             this.set(storage_key, data_store);
         },
         /*changeOption: function(id, option) {
