@@ -349,20 +349,10 @@ $(function() {
             this.resize(Math.max(this.get('minWidth') || 150, width), height);
         },
         addModifier: function(option) {
-            var options = this.get('options');
-            options.push({
-                id: _.uniqueId('option-'),
-                text: 'Option ' + options.length
-            });
-            this.set('options', options);
+            this.addElement('options', 'Modifier');
         },
         addTrigger: function() {
-            var triggers = this.get('triggers');
-            triggers.push({
-                id: _.uniqueId('trigger-'),
-                text: 'Trigger' + triggers.length
-            });
-            this.set('triggers', triggers);
+            this.addElement('triggers', 'Trigger');
         },
         removeElementById: function(id, storage_key) {
             data_store = this.get(storage_key);
@@ -375,7 +365,15 @@ $(function() {
             this.set('options', this.removeElementById(id, 'options'));
         },
         removeTrigger: function(id) {
-            this.set('triggers', this.removeElementById(id, 'triggers'));
+            this.set('triggers', this.removeElementById(id, 'triggers'))
+        },
+        addElement: function(storage_key, placeholder_name) {
+            var data_store = JSON.parse(JSON.stringify(this.get(storage_key)));
+            data_store.push({
+                id: _.uniqueId(storage_key + '-'),
+                text: placeholder_name + ' ' + data_store.length
+            });
+            this.set(storage_key, data_store);
         },
         /*changeOption: function(id, option) {
               if (!option.id) option.id = id;
