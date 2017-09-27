@@ -265,7 +265,7 @@ app.AppView = Backbone.View.extend({
             },
             defaultLink: new joint.dia.Link({
                 router: {
-                    name: 'manhattan'
+                    name: 'metro'
                 },
                 connector: {
                     name: 'rounded'
