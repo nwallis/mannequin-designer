@@ -48,6 +48,30 @@ joint.util.measureText = function(text, attrs) {
     };
 };
 
+joint.shapes.qad.TriggerView = joint.dia.ElementView.extend({
+    events: {
+        'click .btn-remove-trigger': 'onRemoveTrigger',
+    },
+    initialize: function(e) {
+        joint.dia.ElementView.prototype.initialize.apply(this, arguments);
+        this.listenTo(this.model, 'change:parent', this.autoresize, this);
+    },
+    autoresize: function() {
+        if (this.getParent()) {
+            var parentBounds = this.getParent().getBBox();
+            this.model.resize(parentBounds.width, 30);
+        }
+    },
+    getParent: function() {
+        return this.model.graph.getCell(this.model.attributes.parent);
+    },
+    onRemoveTrigger: function(evt) {
+        this.getParent().removeTrigger(this.model.id);
+        this.getParent().unembed(this.model);
+        this.remove();
+    }
+});
+
 joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
     events: {
         'click .btn-remove-modifier': 'onRemoveModifier',
@@ -100,22 +124,23 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     },
 
     layoutChildren: function() {
-        this.renderModifiers();
-        this.renderTriggers();
+        this.layoutModifiers();
+        this.layoutTriggers();
     },
 
-    renderTriggers: function() {
-        /*    var $triggerContainer = this.$('.triggers');
-          $triggerContainer.empty();
-          _.each(this.model.get('triggers'), function(trigger, index) {
-              var triggerHelper = V(this.model.triggerMarkup).addClass('trigger-' + trigger.id);
-              triggerHelper.attr('trigger-id', trigger.id);
-              $triggerContainer.append(triggerHelper.node);
-          }, this);
-          this.update();*/
+    layoutTriggers: function() {
+        var options = this.model.get('triggers');
+        var optionHeight = this.model.get('optionHeight');
+        var offsetY = 50;
+        _.each(options, function(option) {
+            option.position(0, offsetY, {
+                parentRelative: true
+            });
+            offsetY += optionHeight;
+        }, this);
     },
 
-    renderModifiers: function() {
+    layoutModifiers: function() {
         var options = this.model.get('options');
         var optionHeight = this.model.get('optionHeight');
         var offsetY = 50;

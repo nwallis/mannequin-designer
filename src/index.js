@@ -2,6 +2,31 @@ var app = app || {};
 
 $(function() {
 
+    joint.dia.Element.define('qad.Trigger', {
+        attrs: {
+            '.btn-remove-modifier': {
+                'x-alignment': 10,
+                'y-alignment': 13,
+                cursor: 'pointer',
+                fill: 'black'
+            },
+            '.option-rect': {
+                fill: '#777777',
+                stroke: 'none',
+                width: 100,
+                height: 60,
+            },
+            '.trigger-text': {
+                'font-size': 11,
+                fill: 'white',
+                'y-alignment': .7,
+                'x-alignment': 40
+            }
+        }
+    }, {
+        markup: $.trim($("#trigger-template").html()),
+    });
+
     joint.dia.Element.define('qad.Modifier', {
         attrs: {
             '.btn-remove-modifier': {
@@ -197,8 +222,8 @@ $(function() {
 
         initialize: function() {
             joint.dia.Element.prototype.initialize.apply(this, arguments);
-            //this.listenTo(this, 'change:options', this.onElementsAdded, this);
-            // this.listenTo(this, 'change:triggers', this.onElementsAdded, this);
+            this.listenTo(this, 'change:options', this.autoresize, this);
+            this.listenTo(this, 'change:triggers', this.autoresize, this);
             this.on('change:question', function() {
                 this.attr('.question-text/text', this.get('question') || '');
                 this.autoresize();
@@ -284,15 +309,18 @@ $(function() {
             }).width;
             this.resize(Math.max(this.get('minWidth') || 150, width), height);
         },
+
         addModifier: function() {
             var new_modifier = app.Factory.createModifier(_.uniqueId(), "Modifier " + this.get('options').length);
             this.addElementToStore('options', new_modifier);
-            this.autoresize();
             this.graph.addCell(new_modifier);
             this.embed(new_modifier);
         },
         addTrigger: function() {
-            this.addElement('triggers', 'Trigger');
+            var new_trigger = app.Factory.createTrigger(_.uniqueId(), "Trigger " + this.get('triggers').length);
+            this.addElementToStore('triggers', new_trigger);
+            this.graph.addCell(new_trigger);
+            this.embed(new_trigger);
         },
         removeElementById: function(id, storage_key) {
             data_store = this.get(storage_key);
@@ -304,13 +332,9 @@ $(function() {
         },
         removeModifier: function(id) {
             this.set('options', this.removeElementById(id, 'options'));
-            this.autoresize();
         },
         removeTrigger: function(id) {
             this.set('triggers', this.removeElementById(id, 'triggers'))
-        },
-        getDataStoreCopy: function(storage_key) {
-            return JSON.parse(JSON.stringify(this.get(storage_key)));
         },
         addElementToStore: function(storage_key, item) {
             this.set(storage_key, this.get(storage_key).concat(item));

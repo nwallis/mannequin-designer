@@ -2,6 +2,18 @@ var app = app || {};
 
 app.Factory = {
 
+    createTrigger: function(id, text) {
+        var q = new joint.shapes.qad.Trigger({
+            id: 'trigger-' + id,
+            attrs: {
+                '.trigger-text': {
+                    text: text
+                }
+            }
+        });
+        return q;
+    },
+
     createModifier: function(id, text) {
         var q = new joint.shapes.qad.Modifier({
             id: 'option-' + id,
