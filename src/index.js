@@ -297,12 +297,14 @@ $(function() {
         removeElementById: function(id, storage_key) {
             data_store = this.get(storage_key);
             this.removePort(id);
-            return _.without(data_store, _.findWhere(data_store, {
+            data_store = _.without(data_store, _.findWhere(data_store, {
                 id: id
             }));
+            return data_store;
         },
         removeModifier: function(id) {
             this.set('options', this.removeElementById(id, 'options'));
+            this.autoresize();
         },
         removeTrigger: function(id) {
             this.set('triggers', this.removeElementById(id, 'triggers'))

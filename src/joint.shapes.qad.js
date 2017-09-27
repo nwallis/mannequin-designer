@@ -57,8 +57,18 @@ joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
         this.listenTo(this.model, 'change:parent', this.autoresize, this);
     },
     autoresize: function() {
-        var parentBounds = this.model.graph.getCell(this.model.attributes.parent).getBBox();
-        this.model.resize(parentBounds.width, 30);
+        if (this.getParent()) {
+            var parentBounds = this.getParent().getBBox();
+            this.model.resize(parentBounds.width, 30);
+        }
+    },
+    getParent: function() {
+        return this.model.graph.getCell(this.model.attributes.parent);
+    },
+    onRemoveModifier: function(evt) {
+        this.getParent().removeModifier(this.model.id);
+        this.getParent().unembed(this.model);
+        this.remove();
     }
 });
 
@@ -82,7 +92,6 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     events: {
         'click .btn-add-modifier': 'onAddModifier',
         'click .btn-add-trigger': 'onAddTrigger',
-        'click .btn-remove-trigger': 'onRemoveTrigger'
     },
 
     initialize: function() {
@@ -124,11 +133,5 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     onAddModifier: function() {
         this.model.addModifier();
     },
-    onRemoveModifier: function(evt) {
-        this.model.removeModifier(V(evt.target.parentNode).attr('option-id'));
-    },
-    onRemoveTrigger: function(evt) {
-        this.model.removeTrigger(V(evt.target.parentNode).attr('trigger-id'));
-    }
 
 });
