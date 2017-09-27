@@ -247,16 +247,17 @@ app.AppView = Backbone.View.extend({
             height: 600,
             gridSize: 10,
             snapLinks: {
-                radius: 75
+                radius: 50
             },
             validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
-                if (cellViewS === cellViewT) return false;
+                //refactor - stop ports on same state being linked
+                //if (cellViewS === cellViewT) return false;
                 if (magnetS.getAttribute('port-group') !== magnetT.getAttribute('port-group')) return true;
                 return false;
             },
             validateMagnet: function(cellView, magnet) {
+                //return magnet.getAttribute('port-group') !== 'in';
                 return true;
-                return magnet.getAttribute('port-group') !== 'in';
             },
             defaultLink: new joint.dia.Link({
                 router: {
@@ -274,7 +275,6 @@ app.AppView = Backbone.View.extend({
                     '.connection': {
                         stroke: '#6a6c8a',
                         'stroke-width': 2
-                            //filter: { name: 'dropShadow', args: { dx: 1, dy: 1, blur: 2 } }
                     }
                 }
             })

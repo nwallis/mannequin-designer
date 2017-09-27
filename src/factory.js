@@ -1,19 +1,49 @@
-/*! Rappid v2.1.0 - HTML5 Diagramming Framework - TRIAL VERSION
-
-Copyright (c) 2015 client IO
-
- 2017-09-14 
-
-
-This Source Code Form is subject to the terms of the Rappid Trial License
-, v. 2.0. If a copy of the Rappid License was not distributed with this
-file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
- or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
-
-
 var app = app || {};
 
 app.Factory = {
+
+    createTrigger: function(id, text) {
+        var q = new joint.shapes.qad.Trigger({
+            id: 'trigger-' + id,
+            attrs: {
+                '.trigger-text': {
+                    text: text
+                }
+            },
+            ports: {
+                groups: {
+                    'out': {
+                        position: 'right',
+                        attrs: {
+                            circle: {
+                                magnet: true,
+                                fill: '#feb663',
+                                r: 14
+                            }
+                        }
+                    }
+                },
+                items: [{
+                    id: 'trigger-port-' + id,
+                    group: 'out',
+                    args: {},
+                }]
+            }
+        });
+        return q;
+    },
+
+    createModifier: function(id, text) {
+        var q = new joint.shapes.qad.Modifier({
+            id: 'option-' + id,
+            attrs: {
+                '.option-text': {
+                    text: text
+                }
+            }
+        });
+        return q;
+    },
 
     createQuestion: function(text) {
 
@@ -78,19 +108,19 @@ app.Factory = {
 
     // Example:
     /*
-      {
-         root: '1',
-         nodes: [
-            { id: '1', type: 'qad.Question', question: 'Are you sure?', options: [{ id: 'yes', text: 'Yes' }, { id: 'no', text: 'No' }] },
-            { id: '2', type: 'qad.Answer', answer: 'That was good.' },
-            { id: '3', type: 'qad.Answer', answer: 'That was bad.' }
-         ],
-         links: [
-            { type: 'qad.Link', source: { id: '1', port: 'yes' }, target: { id: '2' } },
-            { type: 'qad.Link', source: { id: '1', port: 'no' }, target: { id: '3' } }
-         ]
-      }
-    */
+        {
+           root: '1',
+           nodes: [
+              { id: '1', type: 'qad.Question', question: 'Are you sure?', options: [{ id: 'yes', text: 'Yes' }, { id: 'no', text: 'No' }] },
+              { id: '2', type: 'qad.Answer', answer: 'That was good.' },
+              { id: '3', type: 'qad.Answer', answer: 'That was bad.' }
+           ],
+           links: [
+              { type: 'qad.Link', source: { id: '1', port: 'yes' }, target: { id: '2' } },
+              { type: 'qad.Link', source: { id: '1', port: 'no' }, target: { id: '3' } }
+           ]
+        }
+        */
     createDialogJSON: function(graph, rootCell) {
 
         var dialog = {

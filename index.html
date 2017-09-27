@@ -71,24 +71,26 @@
           <rect class="body"/>
         </g>
         <text class="question-text"></text>
-        <g class="options"></g>
-        <g class="triggers"></g>
         <path class="btn-add-modifier" d="M5,0 10,0 10,5 15,5 15,10 10,10 10,15 5,15 5,10 0,10 0,5 5,5z"/>
         <path class="btn-add-trigger" d="M5,0 10,0 10,5 15,5 15,10 10,10 10,15 5,15 5,10 0,10 0,5 5,5z"/>
       </g>
     </script>
 
     <script type="text/template" id="trigger-template">
-      <g class="trigger">
-        <rect class="trigger-bg-rect"></rect>
+      <g class="rotatable trigger">
+        <g class="scalable">
+          <rect class="trigger-rect"></rect>
+        </g>
         <path class="btn-remove-trigger" d="M0,0 15,0 15,5 0,5z"></path>
-        <text class="option-text"></text>
+        <text class="trigger-text"></text>
       </g>
     </script>
 
     <script type="text/template" id="modifier-template">
-      <g class="option">
-        <rect class="option-rect"></rect>
+      <g class="rotatable option">
+        <g class="scalable">
+          <rect class="option-rect"></rect>
+        </g>
         <path class="btn-remove-modifier" d="M0,0 15,0 15,5 0,5z"></path>
         <text class="option-text"></text>
       </g>
