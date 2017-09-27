@@ -35,14 +35,19 @@ app.AppView = Backbone.View.extend({
         'click #toolbar .preview-dialog': 'previewDialog',
         'click #toolbar .code-snippet': 'showCodeSnippet',
         'click #toolbar .load-example': 'loadExample',
-        'click #toolbar .clear': 'clear'
+        'click #toolbar .clear': 'clear',
+        'click': 'onTriggerSelected',
+    },
+
+    onTriggerSelected: function(evt) {
+        console.log("trigger selected");
     },
 
     initialize: function() {
         this.initializePaper();
         this.initializeSelection();
         this.initializeHalo();
-        this.initializeInlineTextEditor();
+        //this.initializeInlineTextEditor();
         this.initializeTooltips();
         //this.loadExample();
     },
@@ -71,105 +76,105 @@ app.AppView = Backbone.View.extend({
         });
     },
 
-    initializeInlineTextEditor: function() {
+    /*initializeInlineTextEditor: function() {
 
-        var cellViewUnderEdit;
+          var cellViewUnderEdit;
 
-        var closeEditor = _.bind(function() {
+          var closeEditor = _.bind(function() {
 
-            if (this.textEditor) {
-                this.textEditor.remove();
-                // Re-enable dragging after inline editing.
-                cellViewUnderEdit.options.interactive = true;
-                this.textEditor = cellViewUnderEdit = undefined;
-            }
-        }, this);
+              if (this.textEditor) {
+                  this.textEditor.remove();
+                  // Re-enable dragging after inline editing.
+                  cellViewUnderEdit.options.interactive = true;
+                  this.textEditor = cellViewUnderEdit = undefined;
+              }
+          }, this);
 
-        this.paper.on('cell:pointerdblclick', function(cellView, evt) {
+          this.paper.on('cell:pointerdblclick', function(cellView, evt) {
 
-            // Clean up the old text editor if there was one.
-            closeEditor();
+              // Clean up the old text editor if there was one.
+              closeEditor();
 
-            var vTarget = V(evt.target);
-            var text;
-            var cell = cellView.model;
+              var vTarget = V(evt.target);
+              var text;
+              var cell = cellView.model;
 
-            switch (cell.get('type')) {
+              switch (cell.get('type')) {
 
-                case 'qad.Question':
+                  case 'qad.Question':
 
-                    text = joint.ui.TextEditor.getTextElement(evt.target);
-                    if (!text) {
-                        break;
-                    }
-                    if (vTarget.hasClass('body') || V(text).hasClass('question-text')) {
+                      text = joint.ui.TextEditor.getTextElement(evt.target);
+                      if (!text) {
+                          break;
+                      }
+                      if (vTarget.hasClass('body') || V(text).hasClass('question-text')) {
 
-                        text = cellView.$('.question-text')[0];
-                        cellView.textEditPath = 'question';
+                          text = cellView.$('.question-text')[0];
+                          cellView.textEditPath = 'question';
 
-                    } else if (V(text).hasClass('option-text')) {
+                      } else if (V(text).hasClass('option-text')) {
 
-                        cellView.textEditPath = 'options/' + _.findIndex(cell.get('options'), {
-                            id: V(text.parentNode).attr('option-id')
-                        }) + '/text';
-                        cellView.optionId = V(text.parentNode).attr('option-id');
+                          cellView.textEditPath = 'options/' + _.findIndex(cell.get('options'), {
+                              id: V(text.parentNode).attr('option-id')
+                          }) + '/text';
+                          cellView.optionId = V(text.parentNode).attr('option-id');
 
-                    } else if (vTarget.hasClass('option-rect')) {
+                      } else if (vTarget.hasClass('option-rect')) {
 
-                        text = V(vTarget.node.parentNode).find('.option-text');
-                        cellView.textEditPath = 'options/' + _.findIndex(cell.get('options'), {
-                            id: V(vTarget.node.parentNode).attr('option-id')
-                        }) + '/text';
-                    }
-                    break;
+                          text = V(vTarget.node.parentNode).find('.option-text');
+                          cellView.textEditPath = 'options/' + _.findIndex(cell.get('options'), {
+                              id: V(vTarget.node.parentNode).attr('option-id')
+                          }) + '/text';
+                      }
+                      break;
 
-                case 'qad.Answer':
-                    text = joint.ui.TextEditor.getTextElement(evt.target);
-                    cellView.textEditPath = 'answer';
-                    break;
-            }
+                  case 'qad.Answer':
+                      text = joint.ui.TextEditor.getTextElement(evt.target);
+                      cellView.textEditPath = 'answer';
+                      break;
+              }
 
-            if (text) {
+              if (text) {
 
-                this.textEditor = new joint.ui.TextEditor({
-                    text: text
-                });
-                this.textEditor.render(this.paper.el);
+                  this.textEditor = new joint.ui.TextEditor({
+                      text: text
+                  });
+                  this.textEditor.render(this.paper.el);
 
-                this.textEditor.on('text:change', function(newText) {
+                  this.textEditor.on('text:change', function(newText) {
 
-                    var cell = cellViewUnderEdit.model;
-                    // TODO: prop() changes options and so options are re-rendered
-                    // (they are rendered dynamically).
-                    // This means that the `text` SVG element passed to the ui.TextEditor
-                    // no longer exists! An exception is thrown subsequently.
-                    // What do we do here?
-                    cell.prop(cellViewUnderEdit.textEditPath, newText);
+                      var cell = cellViewUnderEdit.model;
+                      // TODO: prop() changes options and so options are re-rendered
+                      // (they are rendered dynamically).
+                      // This means that the `text` SVG element passed to the ui.TextEditor
+                      // no longer exists! An exception is thrown subsequently.
+                      // What do we do here?
+                      cell.prop(cellViewUnderEdit.textEditPath, newText);
 
-                    // A temporary solution or the right one? We just
-                    // replace the SVG text element of the textEditor options object with the new one
-                    // that was dynamically created as a reaction on the `prop` change.
-                    if (cellViewUnderEdit.optionId) {
-                        this.textEditor.options.text = cellViewUnderEdit.$('.option.option-' + cellViewUnderEdit.optionId + ' .option-text')[0];
-                    }
+                      // A temporary solution or the right one? We just
+                      // replace the SVG text element of the textEditor options object with the new one
+                      // that was dynamically created as a reaction on the `prop` change.
+                      if (cellViewUnderEdit.optionId) {
+                          this.textEditor.options.text = cellViewUnderEdit.$('.option.option-' + cellViewUnderEdit.optionId + ' .option-text')[0];
+                      }
 
-                }, this);
+                  }, this);
 
-                cellViewUnderEdit = cellView;
-                // Prevent dragging during inline editing.
-                cellViewUnderEdit.options.interactive = false;
-            }
-        }, this);
+                  cellViewUnderEdit = cellView;
+                  // Prevent dragging during inline editing.
+                  cellViewUnderEdit.options.interactive = false;
+              }
+          }, this);
 
-        $(document.body).on('click', _.bind(function(evt) {
+          $(document.body).on('click', _.bind(function(evt) {
 
-            var text = joint.ui.TextEditor.getTextElement(evt.target);
-            if (this.textEditor && !text) {
+              var text = joint.ui.TextEditor.getTextElement(evt.target);
+              if (this.textEditor && !text) {
 
-                closeEditor();
-            }
-        }, this));
-    },
+                  closeEditor();
+              }
+          }, this));
+      },*/
 
     initializeHalo: function() {
 

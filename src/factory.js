@@ -28,6 +28,18 @@ app.Factory = {
                     group: 'out',
                     args: {},
                 }]
+            },
+            "data": {
+                "give_panadol": {
+                    "type": "GiveDrug",
+                    "params": {
+                        "comparison": "at_least",
+                        "drug": "panadol",
+                        "dose": 100,
+                        "dose_unit": "mg",
+                        "linked_state": "patient_feeling_better"
+                    }
+                }
             }
         });
         return q;
