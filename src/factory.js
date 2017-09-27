@@ -1,24 +1,5 @@
 var app = app || {};
 
-var port = {
-    id: 'abc',
-    group: 'a',
-    args: {},
-    label: {
-        position: {
-            name: 'top',
-            args: {}
-        },
-        markup: '<text class="label-text" fill="blue"/>'
-    },
-    attrs: {
-        text: {
-            text: 'port1'
-        }
-    },
-    markup: '<rect width="10" height="10" stroke="red"/>'
-};
-
 app.Factory = {
 
     createTrigger: function(id, text) {
@@ -30,8 +11,23 @@ app.Factory = {
                 }
             },
             ports: {
-                groups: {},
-                items: [port]
+                groups: {
+                    'out': {
+                        position: 'right',
+                        attrs: {
+                            circle: {
+                                magnet: true,
+                                fill: '#feb663',
+                                r: 14
+                            }
+                        }
+                    }
+                },
+                items: [{
+                    id: 'trigger-port-' + id,
+                    group: 'out',
+                    args: {},
+                }]
             }
         });
         return q;
