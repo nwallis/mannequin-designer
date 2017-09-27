@@ -4,13 +4,13 @@ $(function() {
 
     joint.dia.Element.define('qad.Trigger', {
         attrs: {
-            '.btn-remove-modifier': {
+            '.btn-remove-trigger': {
                 'x-alignment': 10,
                 'y-alignment': 13,
                 cursor: 'pointer',
                 fill: 'black'
             },
-            '.option-rect': {
+            '.trigger-rect': {
                 fill: '#777777',
                 stroke: 'none',
                 width: 100,
@@ -105,17 +105,6 @@ $(function() {
                             args: {
                                 x: 5
                             }
-                        }
-                    }
-                },
-                out: {
-                    position: 'right',
-                    attrs: {
-                        'circle': {
-                            magnet: true,
-                            stroke: 'none',
-                            fill: '#31d0c6',
-                            r: 14
                         }
                     }
                 }
@@ -245,12 +234,12 @@ $(function() {
 
         onChangeTriggers: function() {
             //Get values from model to keep code get() free
-            var triggers = this.get('triggers');
-            var optionHeight = this.get('optionHeight');
-            var attrs = this.get('attrs');
-            var questionHeight = this.get('questionHeight');
-            var offsetY = (this.get('options').length * optionHeight) + ((this.get('options').length > 0) ? 70 : 50);
-            var attrsUpdate = {};
+            /*var triggers = this.get('triggers');
+              var optionHeight = this.get('optionHeight');
+              var attrs = this.get('attrs');
+              var questionHeight = this.get('questionHeight');
+              var offsetY = (this.get('options').length * optionHeight) + ((this.get('options').length > 0) ? 70 : 50);
+              var attrsUpdate = {};*/
 
             //iterate attributes for each selector
             _.each(attrs, function(attrs, selector) {

@@ -131,7 +131,7 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     layoutTriggers: function() {
         var options = this.model.get('triggers');
         var optionHeight = this.model.get('optionHeight');
-        var offsetY = 50;
+        var offsetY = 70 + (this.model.get('options').length * optionHeight);
         _.each(options, function(option) {
             option.position(0, offsetY, {
                 parentRelative: true

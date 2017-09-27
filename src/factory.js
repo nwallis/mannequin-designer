@@ -1,5 +1,24 @@
 var app = app || {};
 
+var port = {
+    id: 'abc',
+    group: 'a',
+    args: {},
+    label: {
+        position: {
+            name: 'top',
+            args: {}
+        },
+        markup: '<text class="label-text" fill="blue"/>'
+    },
+    attrs: {
+        text: {
+            text: 'port1'
+        }
+    },
+    markup: '<rect width="10" height="10" stroke="red"/>'
+};
+
 app.Factory = {
 
     createTrigger: function(id, text) {
@@ -9,6 +28,10 @@ app.Factory = {
                 '.trigger-text': {
                     text: text
                 }
+            },
+            ports: {
+                groups: {},
+                items: [port]
             }
         });
         return q;
@@ -89,19 +112,19 @@ app.Factory = {
 
     // Example:
     /*
-      {
-         root: '1',
-         nodes: [
-            { id: '1', type: 'qad.Question', question: 'Are you sure?', options: [{ id: 'yes', text: 'Yes' }, { id: 'no', text: 'No' }] },
-            { id: '2', type: 'qad.Answer', answer: 'That was good.' },
-            { id: '3', type: 'qad.Answer', answer: 'That was bad.' }
-         ],
-         links: [
-            { type: 'qad.Link', source: { id: '1', port: 'yes' }, target: { id: '2' } },
-            { type: 'qad.Link', source: { id: '1', port: 'no' }, target: { id: '3' } }
-         ]
-      }
-    */
+        {
+           root: '1',
+           nodes: [
+              { id: '1', type: 'qad.Question', question: 'Are you sure?', options: [{ id: 'yes', text: 'Yes' }, { id: 'no', text: 'No' }] },
+              { id: '2', type: 'qad.Answer', answer: 'That was good.' },
+              { id: '3', type: 'qad.Answer', answer: 'That was bad.' }
+           ],
+           links: [
+              { type: 'qad.Link', source: { id: '1', port: 'yes' }, target: { id: '2' } },
+              { type: 'qad.Link', source: { id: '1', port: 'no' }, target: { id: '3' } }
+           ]
+        }
+        */
     createDialogJSON: function(graph, rootCell) {
 
         var dialog = {
