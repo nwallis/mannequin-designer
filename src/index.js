@@ -11,19 +11,17 @@ $(function() {
                 fill: 'black'
             },
             '.option-rect': {
-                fill: '#4b4a67',
+                fill: '#777777',
                 stroke: 'none',
                 width: 100,
                 height: 60,
-                rx: 3,
-                ry: 3
             },
             '.option-text': {
                 'font-size': 11,
-                fill: '#4b4a67',
+                fill: 'white',
                 'y-alignment': .7,
-                'x-alignment': 30
-            },
+                'x-alignment': 40
+            }
         }
     }, {
         markup: $.trim($("#modifier-template").html()),
@@ -289,8 +287,8 @@ $(function() {
         addModifier: function() {
             var new_modifier = app.Factory.createModifier(_.uniqueId(), "Modifier " + this.get('options').length);
             this.addElementToStore('options', new_modifier);
-            this.autoresize(); //size the question view
-            this.graph.addCell(new_modifier); //add to graph
+            this.autoresize();
+            this.graph.addCell(new_modifier);
             this.embed(new_modifier);
         },
         addTrigger: function() {
@@ -313,18 +311,8 @@ $(function() {
             return JSON.parse(JSON.stringify(this.get(storage_key)));
         },
         addElementToStore: function(storage_key, item) {
-            var data_store = this.getDataStoreCopy(storage_key);
-            data_store.push(item);
-            this.set(storage_key, data_store);
-        },
-        /*changeOption: function(id, option) {
-              if (!option.id) option.id = id;
-              var options = JSON.parse(JSON.stringify(this.get('options')));
-              options[_.findIndex(options, {
-                  id: id
-              })] = option;
-              this.set('options', options);
-          }*/
+            this.set(storage_key, this.get(storage_key).concat(item));
+        }
     });
 
     window.appView = new app.AppView;

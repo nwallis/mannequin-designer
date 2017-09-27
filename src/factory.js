@@ -5,7 +5,11 @@ app.Factory = {
     createModifier: function(id, text) {
         var q = new joint.shapes.qad.Modifier({
             id: 'option-' + id,
-            text: text
+            attrs: {
+                '.option-text': {
+                    text: text
+                }
+            }
         });
         return q;
     },

@@ -49,12 +49,10 @@ joint.util.measureText = function(text, attrs) {
 };
 
 joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
-
     events: {
         'click .btn-remove-modifier': 'onRemoveModifier',
     },
     initialize: function(e) {
-        console.log("initing view for modifier");
         joint.dia.ElementView.prototype.initialize.apply(this, arguments);
         this.listenTo(this.model, 'change:parent', this.autoresize, this);
     },
@@ -66,7 +64,6 @@ joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
 
 joint.shapes.qad.AnswerView = joint.dia.ElementView.extend({
     initialize: function() {
-
         joint.dia.ElementView.prototype.initialize.apply(this, arguments);
         this.autoresize();
         this.listenTo(this.model, 'change:answer', this.autoresize, this);
@@ -112,14 +109,12 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     renderModifiers: function() {
         var options = this.model.get('options');
         var optionHeight = this.model.get('optionHeight');
-        var offsetY = (options.length * optionHeight) + ((options.length > 0) ? 50 : 30);
+        var offsetY = 50;
         _.each(options, function(option) {
-            if (typeof(option.position) == "function") {
-                option.position(0, offsetY, {
-                    parentRelative: true
-                });
-                offsetY += optionHeight;
-            }
+            option.position(0, offsetY, {
+                parentRelative: true
+            });
+            offsetY += optionHeight;
         }, this);
     },
 
