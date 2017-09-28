@@ -101,43 +101,64 @@
       <label for="time_limit">Duration</label>
       <input type="text" id="time_limit" value="<%= model.params.time_limit %>">
     </script>
+
     <script type="text/template" id="trigger-type-give-drug-template">
-
-      <label for="comparison">Comparison</label>
-      <select id="comparison">
-        <option value="">Please select...</option>
-        <option value="at_least" <%= (model.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
-        <option value="no_more_than" <%= (model.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
-        <option value="exactly" <%= (model.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
-      </select>
-
-      <label for="dose">Dose</label>
-      <input type="text" id="dose" placholder="Enter a value" value="<%= model.params.dose %>">
-
-      <label for="dose_unit">Unit</label>
-      <select id="dose_unit">
-        <option value="">Please select...</option>
-        <option value="mg" <%= (model.params.dose_unit == 'mg') ? "selected" : "" %>>mg</option>
-        <option value="kg" <%= (model.params.dose_unit == 'kg') ? "selected" : "" %>>kg</option>
-      </select>
-
-      <label for="drug">Drug name</label>
-      <select id="drug" name="">
-        <option value="">Please select...</option>
-        <option value="panadol" <%= (model.params.drug == 'panadol') ? "selected" : "" %>>Panadol</option>
-        <option value="neurophen" <%= (model.params.drug == 'neurophen') ? "selected" : "" %>>Neurophen</option>
-      </select>
+      <div class="row">
+        <div class="col">
+          <label for="comparison">Comparison</label>
+          <select id="comparison">
+            <option value="">Please select...</option>
+            <option value="at_least" <%= (model.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
+            <option value="no_more_than" <%= (model.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
+            <option value="exactly" <%= (model.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="dose">Dose</label>
+          <input type="text" id="dose" placholder="Enter a value" value="<%= model.params.dose %>">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="dose_unit">Unit</label>
+          <select id="dose_unit">
+            <option value="">Please select...</option>
+            <option value="mg" <%= (model.params.dose_unit == 'mg') ? "selected" : "" %>>mg</option>
+            <option value="kg" <%= (model.params.dose_unit == 'kg') ? "selected" : "" %>>kg</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="drug">Drug name</label>
+          <select id="drug" name="">
+            <option value="">Please select...</option>
+            <option value="panadol" <%= (model.params.drug == 'panadol') ? "selected" : "" %>>Panadol</option>
+            <option value="neurophen" <%= (model.params.drug == 'neurophen') ? "selected" : "" %>>Neurophen</option>
+          </select>
+        </div>
+      </div>
     </script>
 
     <script type="text/template" id="trigger-type-template">
-      <label for="trigger-name">Trigger name</label>
-      <input type="text" id="trigger-name" placeholder="trigger name"/>
-      <label for="trigger-type">Trigger type</label>
-      <select id="trigger-type" name="">
-        <option value="">Please select..</option>
-        <option value="GiveDrug" <%= (model.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
-        <option value="TimeLimit" <%= (model.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
-      </select>
+      <div class="row">
+        <div class="col">
+          <label for="trigger-name">Trigger name</label>
+          <input type="text" id="trigger-name" placeholder="trigger name"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="trigger-type">Trigger type</label>
+          <select id="trigger-type" name="">
+            <option value="">Please select..</option>
+            <option value="GiveDrug" <%= (model.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
+            <option value="TimeLimit" <%= (model.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
+          </select>
+        </div>
+      </div>
       <div id="trigger-parameters"></div>
     </script>
 
