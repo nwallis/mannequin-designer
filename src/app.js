@@ -30,7 +30,7 @@ app.AppView = Backbone.View.extend({
     el: '#app',
 
     events: {
-        'click #toolbar .add-question': 'addQuestion',
+        'click #add-state': 'addState',
     },
 
     initialize: function() {
@@ -303,7 +303,7 @@ app.AppView = Backbone.View.extend({
         this.$('#statusbar .message').text(m);
     },
 
-    addQuestion: function() {
+    addState: function() {
         var q = app.Factory.createQuestion('Question');
         this.graph.addCell(q);
         this.status('Question added.');
