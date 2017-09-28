@@ -25,6 +25,10 @@ $(function() {
         }
     }, {
         markup: $.trim($("#trigger-template").html()),
+        getTriggerParams: function() {
+            var currentData = this.get('scenario_data');
+            return currentData[Object.keys(currentData)[0]]
+        },
     });
 
     joint.dia.Element.define('qad.Modifier', {

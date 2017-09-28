@@ -241,21 +241,16 @@ app.AppView = Backbone.View.extend({
             },
             render: function() {
                 this.$el.html(this.template({
-                    model: this.getTriggerParams(),
+                    model: this.model.getTriggerParams(),
                 }));
 
                 //instantiate child view if the type of trigger is set
-                if (this.getTriggerParams().type != '') this.createParametersView();
-            },
-            getTriggerParams: function() {
-                //helper function to return the first item in the settings object - array is not used as to maintain convention with backend format 
-                var currentData = this.model.get('scenario_data');
-                return currentData[Object.keys(currentData)[0]]
+                if (this.model.getTriggerParams().type != '') this.createParametersView();
             },
             createParametersView: function(type) {
                 if (this.parameterView) this.parameterView.remove();
-                this.parameterView = new window["app"]["editor"]["triggers"][this.getTriggerParams().type + "View"]({
-                    model: this.getTriggerParams()
+                this.parameterView = new window["app"]["editor"]["triggers"][this.model.getTriggerParams().type + "View"]({
+                    model: this.model.getTriggerParams()
                 });
             },
             onTriggerTypeChange: function(evt) {
@@ -282,7 +277,7 @@ app.AppView = Backbone.View.extend({
         app.editor.EditableElementView = Backbone.View.extend({
             storeChangedValue: function(evt) {
                 this.model.params[evt.currentTarget.id] = evt.currentTarget.value;
-            }
+            },
         });
 
         //convention over configuration
@@ -339,6 +334,7 @@ app.AppView = Backbone.View.extend({
     //Each trigger, modifier or whatever is going to have its own logic when it comes to how it manipulates the 
     //data model of the selected element, therefore, each one will live in its own separate view
 
+
     onSelectionChange: function(collection) {
         var cell = collection.first();
         if (cell) {
@@ -376,9 +372,10 @@ app.AppView = Backbone.View.extend({
                 radius: 50
             },
             validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
-                //refactor - stop ports on same state being linked
-                //if (cellViewS === cellViewT) return false;
-                if (magnetS.getAttribute('port-group') !== magnetT.getAttribute('port-group')) return true;
+                if (magnetS.getAttribute('port-group') !== magnetT.getAttribute('port-group')) {
+                    cellViewS.linkTriggerToState('shit');
+                    return true;
+                }
                 return false;
             },
             validateMagnet: function(cellView, magnet) {
