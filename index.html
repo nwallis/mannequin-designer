@@ -107,11 +107,6 @@
         <option value="no_more_than">No more than</option>
         <option value="exactly">Exactly</option>
       </select>
-      <label for="drug">Drug name</label>
-      <select id="drug" name="">
-        <option value="panadol">Panadol</option>
-        <option value="neurophen">Neurophen</option>
-      </select>
       <label for="dose">Dose</label>
       <input type="text" id="dose" placholder="Enter a value" value="<%= model.params.dose %>">
       <label for="dose_unit">Unit</label>
@@ -120,15 +115,22 @@
         <option value="mg">mg</option>
         <option value="kg">kg</option>
       </select>
+      <label for="drug">Drug name</label>
+      <select id="drug" name="">
+        <option value="">Please select...</option>
+        <option value="panadol">Panadol</option>
+        <option value="neurophen">Neurophen</option>
+      </select>
     </script>
 
     <script type="text/template" id="trigger-type-template">
+      <label for="trigger-name">Trigger name</label>
       <input type="text" id="trigger-name" placeholder="trigger name"/>
       <label for="trigger-type">Trigger type</label>
       <select id="trigger-type" name="">
         <option value="">Please select..</option>
-        <option value="GiveDrug" <%= (params.get('scenario_data').type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
-        <option value="TimeLimit" <%= (params.get('scenario_data').type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
+        <option value="GiveDrug" <%= (model.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
+        <option value="TimeLimit" <%= (model.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
       </select>
       <div id="trigger-parameters"></div>
     </script>

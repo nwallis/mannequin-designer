@@ -241,8 +241,13 @@ app.AppView = Backbone.View.extend({
             },
             render: function() {
                 this.$el.html(this.template({
-                    params: this.model
+                    model: this.getTriggerParams()
                 }));
+            },
+            getTriggerParams: function() {
+                //helper function to return the first item in the settings object - array is not used as to maintain convention with backend format 
+                var currentData = this.model.get('scenario_data');
+                return currentData[Object.keys(currentData)[0]]
             },
             onTriggerTypeChange: function(evt) {
                 //When the trigger type is changed, the scenario data is overwritten with default values
@@ -251,9 +256,8 @@ app.AppView = Backbone.View.extend({
 
                 //Create view for trigger type passing through details for the trigger and clean up any existing view
                 if (this.parameterView) this.parameterView.remove();
-                currentData = this.model.get('scenario_data');
                 this.parameterView = new window["app"]["editor"]["triggers"][evt.currentTarget.value + "View"]({
-                    model: currentData[Object.keys(currentData)[0]]
+                    model: this.getTriggerParams()
                 });
             },
             onTriggerNameChange: function(evt) {
@@ -288,6 +292,13 @@ app.AppView = Backbone.View.extend({
 
         app.editor.triggers.GiveDrugView = Backbone.View.extend({
             el: "#trigger-parameters",
+            events: {
+                "change #drug": "onDrugChange",
+            },
+            onDrugChange: function(evt) {
+                this.model.params.drug = evt.currentTarget.value;
+                console.log(this.model);
+            },
             initialize: function() {
                 this.template = _.template($('#trigger-type-give-drug-template').html());
                 this.render();
