@@ -240,9 +240,8 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             render: function() {
-
                 this.$el.html(this.template({
-                    model: this.getTriggerParams()
+                    model: this.getTriggerParams(),
                 }));
 
                 //instantiate child view if the type of trigger is set
@@ -302,10 +301,25 @@ app.AppView = Backbone.View.extend({
             el: "#trigger-parameters",
             events: {
                 "change #drug": "onDrugChange",
+                "change #dose_unit": "onDoseUnitChange",
+                "change #comparison": "onComparisonChange",
+                "keyup #dose": "onDoseChange",
+            },
+            onDoseUnitChange: function(evt) {
+                this.storeDropDownValue('dose_unit', evt);
+            },
+            onComparisonChange: function(evt) {
+                this.storeDropDownValue('comparison', evt);
             },
             onDrugChange: function(evt) {
-                this.model.params.drug = evt.currentTarget.value;
-                console.log(this.model);
+                this.storeDropDownValue('drug', evt);
+            },
+            onDoseChange: function(evt) {
+                this.storeDropDownValue('dose', evt);
+            },
+            //pull to common class for triggers and modifiers
+            storeDropDownValue: function(param_key, evt) {
+                this.model.params[param_key] = evt.currentTarget.value;
             },
             initialize: function() {
                 this.template = _.template($('#trigger-type-give-drug-template').html());

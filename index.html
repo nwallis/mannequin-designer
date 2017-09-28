@@ -39,7 +39,7 @@
       </div>
 
       <div id="paper" style="float:left;"></div>
-      <div id="editor-container" style="float:right;">
+      <div id="editor-container" style="float:right;width:400px;">
         <div id="element-type"></div>
       </div>
       <div style="clear:both;"></div>
@@ -100,26 +100,30 @@
       <input type="text" id="duration" value="<%= model.params.time_limit %>">
     </script>
     <script type="text/template" id="trigger-type-give-drug-template">
+
       <label for="comparison">Comparison</label>
       <select id="comparison">
         <option value="">Please select...</option>
-        <option value="at_least">At least</option>
-        <option value="no_more_than">No more than</option>
-        <option value="exactly">Exactly</option>
+        <option value="at_least" <%= (model.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
+        <option value="no_more_than" <%= (model.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
+        <option value="exactly" <%= (model.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
       </select>
+
       <label for="dose">Dose</label>
       <input type="text" id="dose" placholder="Enter a value" value="<%= model.params.dose %>">
+
       <label for="dose_unit">Unit</label>
       <select id="dose_unit">
         <option value="">Please select...</option>
-        <option value="mg">mg</option>
-        <option value="kg">kg</option>
+        <option value="mg" <%= (model.params.dose_unit == 'mg') ? "selected" : "" %>>mg</option>
+        <option value="kg" <%= (model.params.dose_unit == 'kg') ? "selected" : "" %>>kg</option>
       </select>
+
       <label for="drug">Drug name</label>
       <select id="drug" name="">
         <option value="">Please select...</option>
-        <option value="panadol">Panadol</option>
-        <option value="neurophen">Neurophen</option>
+        <option value="panadol" <%= (model.params.drug == 'panadol') ? "selected" : "" %>>Panadol</option>
+        <option value="neurophen" <%= (model.params.drug == 'neurophen') ? "selected" : "" %>>Neurophen</option>
       </select>
     </script>
 
