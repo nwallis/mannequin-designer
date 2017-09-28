@@ -382,7 +382,8 @@ app.AppView = Backbone.View.extend({
                 return false;
             },
             validateMagnet: function(cellView, magnet) {
-                return true;
+                if (magnet.getAttribute('port-group') == 'out') return true;
+                return false;
             },
             defaultLink: new joint.dia.Link({
                 router: {
