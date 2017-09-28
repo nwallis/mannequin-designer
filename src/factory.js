@@ -2,7 +2,7 @@ var app = app || {};
 
 app.Factory = {
 
-    createBlankTrigger: function(name, type, params) {
+    createTriggerFromParams: function(name, type, params) {
         var trigger = {};
         trigger[name] = {
             type: type,
@@ -12,14 +12,14 @@ app.Factory = {
     },
 
     createTriggerTypeTimeLimit: function(name, time_limit, linked_state) {
-        return this.createBlankTrigger(name, "TimeLimit", {
+        return this.createTriggerFromParams(name, "TimeLimit", {
             "time_limit": time_limit,
             "linked_state": linked_state
         });
     },
 
     createTriggerTypeGiveDrug: function(name, comparison, drug, dose, dose_unit, linked_state) {
-        return this.createBlankTrigger(name, "TimeLimit", {
+        return this.createTriggerFromParams(name, "TimeLimit", {
             "comparison": comparison,
             "drug": drug,
             "dose": dose,

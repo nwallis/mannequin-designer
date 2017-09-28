@@ -246,8 +246,7 @@ app.AppView = Backbone.View.extend({
                 }));
             },
             onTriggerTypeChange: function(evt) {
-                console.log(evt.currentTarget.value);
-                console.log(app.Factory.createTriggerTypeTimeLimit('my_trigger_name', 100, ''));
+                new window["app"]["editor"]["triggers"][evt.currentTarget.value + "View"]();
             },
             onTriggerNameChange: function(evt) {
                 this.model.first().attr(".trigger-text", {
@@ -264,10 +263,11 @@ app.AppView = Backbone.View.extend({
         app.editor.triggers.GiveDrugView = Backbone.View.extend({
             el: "#element-parameters",
             initialize: function() {
-                this.listenTo(this.model, "reset", this.render);
+                this.render();
+                this.template = _.template($('#trigger-type-give-drug-template').html());
             },
             render: function() {
-                return "shit from child";
+                this.$el.html(template());
             },
             remove: function() {
                 this.$el.empty().off();
@@ -296,9 +296,6 @@ app.AppView = Backbone.View.extend({
             });
 
         } else {
-
-            //Clean up side window views
-
             this.status('Selection emptied.');
         }
     },
