@@ -66,8 +66,8 @@ joint.shapes.qad.TriggerView = joint.dia.ElementView.extend({
         return this.model.graph.getCell(this.model.attributes.parent);
     },
     linkTriggerToState: function(state) {
+        this.model.getTriggerParams().linked_state = state;
         console.log(this.model);
-        console.log("linking trigging to state", state);
     },
     onRemoveTrigger: function(evt) {
         evt.stopPropagation();

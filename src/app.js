@@ -333,8 +333,6 @@ app.AppView = Backbone.View.extend({
 
     //Each trigger, modifier or whatever is going to have its own logic when it comes to how it manipulates the 
     //data model of the selected element, therefore, each one will live in its own separate view
-
-
     onSelectionChange: function(collection) {
         var cell = collection.first();
         if (cell) {
@@ -373,7 +371,7 @@ app.AppView = Backbone.View.extend({
             },
             validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
                 if (magnetS.getAttribute('port-group') !== magnetT.getAttribute('port-group')) {
-                    cellViewS.linkTriggerToState('shit');
+                    cellViewS.linkTriggerToState(cellViewT.model);
                     return true;
                 }
                 return false;
