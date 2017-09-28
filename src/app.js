@@ -240,17 +240,24 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             render: function() {
-                var element_model = this.model.first();
                 this.$el.html(this.template({
-                    params: element_model
+                    params: this.model
                 }));
             },
             onTriggerTypeChange: function(evt) {
+                //When the trigger type is changed, the scenario data is overwritten with default values
+                var currentData = this.model.get('scenario_data');
+                this.model.set('scenario_data', window["app"]["Factory"]["createTriggerType" + evt.currentTarget.value](Object.keys(currentData)[0]));
+
+                //Create view for trigger type passing through details for the trigger and clean up any existing view
                 if (this.parameterView) this.parameterView.remove();
-                this.parameterView = new window["app"]["editor"]["triggers"][evt.currentTarget.value + "View"]();
+                currentData = this.model.get('scenario_data');
+                this.parameterView = new window["app"]["editor"]["triggers"][evt.currentTarget.value + "View"]({
+                    model: currentData[Object.keys(currentData)[0]]
+                });
             },
             onTriggerNameChange: function(evt) {
-                this.model.first().attr(".trigger-text", {
+                this.model.attr(".trigger-text", {
                     text: evt.currentTarget.value
                 });
             },
@@ -268,7 +275,9 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             render: function() {
-                this.$el.html(this.template());
+                this.$el.html(this.template({
+                    model: this.model
+                }));
             },
             remove: function() {
                 this.$el.empty().off();
@@ -284,7 +293,9 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             render: function() {
-                this.$el.html(this.template());
+                this.$el.html(this.template({
+                    model: this.model
+                }));
             },
             remove: function() {
                 this.$el.empty().off();
@@ -312,7 +323,7 @@ app.AppView = Backbone.View.extend({
                 //Cleanup parent view if required
                 if (this.parent_view) this.parent_view.remove();
                 this.parent_view = new view_type_class({
-                    model: collection
+                    model: collection.first()
                 })
             };
 

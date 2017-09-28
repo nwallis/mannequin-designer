@@ -96,10 +96,30 @@
     </script>
 
     <script type="text/template" id="trigger-type-time-limit-template">
-      <div>This is the template for a time limit</div>
+      <label for="duration">Duration</label>
+      <input type="text" id="duration" value="<%= model.params.time_limit %>">
     </script>
     <script type="text/template" id="trigger-type-give-drug-template">
-      <div>This is the template for giving a drug</div>
+      <label for="comparison">Comparison</label>
+      <select id="comparison">
+        <option value="">Please select...</option>
+        <option value="at_least">At least</option>
+        <option value="no_more_than">No more than</option>
+        <option value="exactly">Exactly</option>
+      </select>
+      <label for="drug">Drug name</label>
+      <select id="drug" name="">
+        <option value="panadol">Panadol</option>
+        <option value="neurophen">Neurophen</option>
+      </select>
+      <label for="dose">Dose</label>
+      <input type="text" id="dose" placholder="Enter a value" value="<%= model.params.dose %>">
+      <label for="dose_unit">Unit</label>
+      <select id="dose_unit">
+        <option value="">Please select...</option>
+        <option value="mg">mg</option>
+        <option value="kg">kg</option>
+      </select>
     </script>
 
     <script type="text/template" id="trigger-type-template">
