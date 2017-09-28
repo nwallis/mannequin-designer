@@ -20,7 +20,7 @@ app.Factory = {
     },
 
     createTriggerTypeGiveDrug: function(name, comparison, drug, dose, dose_unit, linked_state) {
-        return this.createTriggerFromParams(name, "TimeLimit", {
+        return this.createTriggerFromParams(name, "GiveDrug", {
             "comparison": comparison || '',
             "drug": drug || '',
             "dose": dose || 0,
