@@ -281,6 +281,15 @@ app.AppView = Backbone.View.extend({
 
         app.editor.triggers.TimeLimitView = Backbone.View.extend({
             el: "#trigger-parameters",
+            events: {
+                "keyup #time_limit": "onTimeLimitChange",
+            },
+            onTimeLimitChange: function(evt) {
+                this.storeDropDownValue('time_limit', evt);
+            },
+            storeDropDownValue: function(param_key, evt) {
+                this.model.params[param_key] = evt.currentTarget.value;
+            },
             initialize: function() {
                 this.template = _.template($('#trigger-type-time-limit-template').html());
                 this.render();
