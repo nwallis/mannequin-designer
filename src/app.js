@@ -236,17 +236,18 @@ app.AppView = Backbone.View.extend({
                 "keyup #trigger-name": "onTriggerNameChange",
             },
             initialize: function() {
+                this.template = _.template($('#trigger-type-template').html());
                 this.render();
             },
             render: function() {
                 var element_model = this.model.first();
-                template = _.template($('#trigger-type-template').html());
-                this.$el.html(template({
+                this.$el.html(this.template({
                     params: element_model
                 }));
             },
             onTriggerTypeChange: function(evt) {
-                new window["app"]["editor"]["triggers"][evt.currentTarget.value + "View"]();
+                if (this.parameterView) this.parameterView.remove();
+                this.parameterView = new window["app"]["editor"]["triggers"][evt.currentTarget.value + "View"]();
             },
             onTriggerNameChange: function(evt) {
                 this.model.first().attr(".trigger-text", {
@@ -260,14 +261,30 @@ app.AppView = Backbone.View.extend({
             }
         });
 
-        app.editor.triggers.GiveDrugView = Backbone.View.extend({
-            el: "#element-parameters",
+        app.editor.triggers.TimeLimitView = Backbone.View.extend({
+            el: "#trigger-parameters",
             initialize: function() {
+                this.template = _.template($('#trigger-type-time-limit-template').html());
                 this.render();
-                this.template = _.template($('#trigger-type-give-drug-template').html());
             },
             render: function() {
-                this.$el.html(template());
+                this.$el.html(this.template());
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+        app.editor.triggers.GiveDrugView = Backbone.View.extend({
+            el: "#trigger-parameters",
+            initialize: function() {
+                this.template = _.template($('#trigger-type-give-drug-template').html());
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template());
             },
             remove: function() {
                 this.$el.empty().off();
@@ -291,9 +308,13 @@ app.AppView = Backbone.View.extend({
                     view_type_class = app.editor.TriggerView
             }
 
-            if (view_type_class) new view_type_class({
-                model: collection
-            });
+            if (view_type_class) {
+                //Cleanup parent view if required
+                if (this.parent_view) this.parent_view.remove();
+                this.parent_view = new view_type_class({
+                    model: collection
+                })
+            };
 
         } else {
             this.status('Selection emptied.');

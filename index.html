@@ -41,7 +41,6 @@
       <div id="paper" style="float:left;"></div>
       <div id="editor-container" style="float:right;">
         <div id="element-type"></div>
-        <div id="element-parameters"></div>
       </div>
       <div style="clear:both;"></div>
 
@@ -96,6 +95,9 @@
       </g>
     </script>
 
+    <script type="text/template" id="trigger-type-time-limit-template">
+      <div>This is the template for a time limit</div>
+    </script>
     <script type="text/template" id="trigger-type-give-drug-template">
       <div>This is the template for giving a drug</div>
     </script>
@@ -108,6 +110,7 @@
         <option value="GiveDrug" <%= (params.get('scenario_data').type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
         <option value="TimeLimit" <%= (params.get('scenario_data').type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
       </select>
+      <div id="trigger-parameters"></div>
     </script>
 
   </body>
