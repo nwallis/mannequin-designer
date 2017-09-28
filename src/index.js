@@ -56,30 +56,6 @@ $(function() {
         markup: $.trim($("#modifier-template").html()),
     });
 
-    joint.dia.Element.define('qad.Answer', {
-        attrs: {
-            'rect': {
-                fill: '#4b4a67',
-                stroke: 'none',
-                width: 100,
-                height: 60,
-                rx: 3,
-                ry: 3
-            },
-            'text': {
-                'font-size': 14,
-                'ref-x': .5,
-                'ref-y': .5,
-                'y-alignment': 'middle',
-                'x-alignment': 'middle',
-                fill: '#f6f6f6',
-                'font-family': 'Arial, helvetica, sans-serif'
-            }
-        }
-    }, {
-        markup: '<g class="rotatable"><g class="scalable"><rect/></g><text/></g>'
-    });
-
     joint.dia.Element.define('qad.Question', {
 
         optionHeight: 30,

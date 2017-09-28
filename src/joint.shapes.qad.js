@@ -101,21 +101,6 @@ joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
     }
 });
 
-joint.shapes.qad.AnswerView = joint.dia.ElementView.extend({
-    initialize: function() {
-        joint.dia.ElementView.prototype.initialize.apply(this, arguments);
-        this.autoresize();
-        this.listenTo(this.model, 'change:answer', this.autoresize, this);
-    },
-    autoresize: function() {
-        var dim = joint.util.measureText(this.model.get('answer'), {
-            fontSize: this.model.attr('text/font-size')
-        });
-        this.model.resize(dim.width + 50, dim.height + 50);
-    }
-});
-
-
 joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
 
     events: {
