@@ -6,7 +6,6 @@
 // create modifier view
 // provide option on state to define it as the starting state
 // provide ability to set obs on state
-// install bootstrap
 // tidy layout 
 // move into phoenix
 // save scenario to server
