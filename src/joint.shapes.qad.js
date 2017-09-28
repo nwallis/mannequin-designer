@@ -66,6 +66,7 @@ joint.shapes.qad.TriggerView = joint.dia.ElementView.extend({
         return this.model.graph.getCell(this.model.attributes.parent);
     },
     onRemoveTrigger: function(evt) {
+        evt.stopPropagation();
         this.getParent().removeTrigger(this.model.id);
         this.getParent().unembed(this.model);
         this.remove();

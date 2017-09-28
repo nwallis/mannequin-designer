@@ -35,16 +35,15 @@ app.AppView = Backbone.View.extend({
         'click #toolbar .preview-dialog': 'previewDialog',
         'click #toolbar .code-snippet': 'showCodeSnippet',
         'click #toolbar .load-example': 'loadExample',
-        'click #toolbar .clear': 'clear'
+        'click #toolbar .clear': 'clear',
     },
 
     initialize: function() {
         this.initializePaper();
         this.initializeSelection();
-        this.initializeHalo();
-        this.initializeInlineTextEditor();
+        //this.initializeHalo();
+        //this.initializeInlineTextEditor();
         this.initializeTooltips();
-        //this.loadExample();
     },
 
     initializeTooltips: function() {
@@ -71,105 +70,105 @@ app.AppView = Backbone.View.extend({
         });
     },
 
-    initializeInlineTextEditor: function() {
+    /*initializeInlineTextEditor: function() {
 
-        var cellViewUnderEdit;
+          var cellViewUnderEdit;
 
-        var closeEditor = _.bind(function() {
+          var closeEditor = _.bind(function() {
 
-            if (this.textEditor) {
-                this.textEditor.remove();
-                // Re-enable dragging after inline editing.
-                cellViewUnderEdit.options.interactive = true;
-                this.textEditor = cellViewUnderEdit = undefined;
-            }
-        }, this);
+              if (this.textEditor) {
+                  this.textEditor.remove();
+                  // Re-enable dragging after inline editing.
+                  cellViewUnderEdit.options.interactive = true;
+                  this.textEditor = cellViewUnderEdit = undefined;
+              }
+          }, this);
 
-        this.paper.on('cell:pointerdblclick', function(cellView, evt) {
+          this.paper.on('cell:pointerdblclick', function(cellView, evt) {
 
-            // Clean up the old text editor if there was one.
-            closeEditor();
+              // Clean up the old text editor if there was one.
+              closeEditor();
 
-            var vTarget = V(evt.target);
-            var text;
-            var cell = cellView.model;
+              var vTarget = V(evt.target);
+              var text;
+              var cell = cellView.model;
 
-            switch (cell.get('type')) {
+              switch (cell.get('type')) {
 
-                case 'qad.Question':
+                  case 'qad.Question':
 
-                    text = joint.ui.TextEditor.getTextElement(evt.target);
-                    if (!text) {
-                        break;
-                    }
-                    if (vTarget.hasClass('body') || V(text).hasClass('question-text')) {
+                      text = joint.ui.TextEditor.getTextElement(evt.target);
+                      if (!text) {
+                          break;
+                      }
+                      if (vTarget.hasClass('body') || V(text).hasClass('question-text')) {
 
-                        text = cellView.$('.question-text')[0];
-                        cellView.textEditPath = 'question';
+                          text = cellView.$('.question-text')[0];
+                          cellView.textEditPath = 'question';
 
-                    } else if (V(text).hasClass('option-text')) {
+                      } else if (V(text).hasClass('option-text')) {
 
-                        cellView.textEditPath = 'options/' + _.findIndex(cell.get('options'), {
-                            id: V(text.parentNode).attr('option-id')
-                        }) + '/text';
-                        cellView.optionId = V(text.parentNode).attr('option-id');
+                          cellView.textEditPath = 'options/' + _.findIndex(cell.get('options'), {
+                              id: V(text.parentNode).attr('option-id')
+                          }) + '/text';
+                          cellView.optionId = V(text.parentNode).attr('option-id');
 
-                    } else if (vTarget.hasClass('option-rect')) {
+                      } else if (vTarget.hasClass('option-rect')) {
 
-                        text = V(vTarget.node.parentNode).find('.option-text');
-                        cellView.textEditPath = 'options/' + _.findIndex(cell.get('options'), {
-                            id: V(vTarget.node.parentNode).attr('option-id')
-                        }) + '/text';
-                    }
-                    break;
+                          text = V(vTarget.node.parentNode).find('.option-text');
+                          cellView.textEditPath = 'options/' + _.findIndex(cell.get('options'), {
+                              id: V(vTarget.node.parentNode).attr('option-id')
+                          }) + '/text';
+                      }
+                      break;
 
-                case 'qad.Answer':
-                    text = joint.ui.TextEditor.getTextElement(evt.target);
-                    cellView.textEditPath = 'answer';
-                    break;
-            }
+                  case 'qad.Answer':
+                      text = joint.ui.TextEditor.getTextElement(evt.target);
+                      cellView.textEditPath = 'answer';
+                      break;
+              }
 
-            if (text) {
+              if (text) {
 
-                this.textEditor = new joint.ui.TextEditor({
-                    text: text
-                });
-                this.textEditor.render(this.paper.el);
+                  this.textEditor = new joint.ui.TextEditor({
+                      text: text
+                  });
+                  this.textEditor.render(this.paper.el);
 
-                this.textEditor.on('text:change', function(newText) {
+                  this.textEditor.on('text:change', function(newText) {
 
-                    var cell = cellViewUnderEdit.model;
-                    // TODO: prop() changes options and so options are re-rendered
-                    // (they are rendered dynamically).
-                    // This means that the `text` SVG element passed to the ui.TextEditor
-                    // no longer exists! An exception is thrown subsequently.
-                    // What do we do here?
-                    cell.prop(cellViewUnderEdit.textEditPath, newText);
+                      var cell = cellViewUnderEdit.model;
+                      // TODO: prop() changes options and so options are re-rendered
+                      // (they are rendered dynamically).
+                      // This means that the `text` SVG element passed to the ui.TextEditor
+                      // no longer exists! An exception is thrown subsequently.
+                      // What do we do here?
+                      cell.prop(cellViewUnderEdit.textEditPath, newText);
 
-                    // A temporary solution or the right one? We just
-                    // replace the SVG text element of the textEditor options object with the new one
-                    // that was dynamically created as a reaction on the `prop` change.
-                    if (cellViewUnderEdit.optionId) {
-                        this.textEditor.options.text = cellViewUnderEdit.$('.option.option-' + cellViewUnderEdit.optionId + ' .option-text')[0];
-                    }
+                      // A temporary solution or the right one? We just
+                      // replace the SVG text element of the textEditor options object with the new one
+                      // that was dynamically created as a reaction on the `prop` change.
+                      if (cellViewUnderEdit.optionId) {
+                          this.textEditor.options.text = cellViewUnderEdit.$('.option.option-' + cellViewUnderEdit.optionId + ' .option-text')[0];
+                      }
 
-                }, this);
+                  }, this);
 
-                cellViewUnderEdit = cellView;
-                // Prevent dragging during inline editing.
-                cellViewUnderEdit.options.interactive = false;
-            }
-        }, this);
+                  cellViewUnderEdit = cellView;
+                  // Prevent dragging during inline editing.
+                  cellViewUnderEdit.options.interactive = false;
+              }
+          }, this);
 
-        $(document.body).on('click', _.bind(function(evt) {
+          $(document.body).on('click', _.bind(function(evt) {
 
-            var text = joint.ui.TextEditor.getTextElement(evt.target);
-            if (this.textEditor && !text) {
+              var text = joint.ui.TextEditor.getTextElement(evt.target);
+              if (this.textEditor && !text) {
 
-                closeEditor();
-            }
-        }, this));
-    },
+                  closeEditor();
+              }
+          }, this));
+      },*/
 
     initializeHalo: function() {
 
@@ -205,35 +204,162 @@ app.AppView = Backbone.View.extend({
 
     initializeSelection: function() {
 
-        document.body.addEventListener('keydown', _.bind(function(evt) {
-
-            var code = evt.which || evt.keyCode;
-            // Do not remove the element with backspace if we're in inline text editing.
-            if ((code === 8 || code === 46) && !this.textEditor && this.selection.first()) {
-
-                this.selection.first().remove();
-                this.selection.reset();
-                return false;
-            }
-
-        }, this), false);
-
         var selection = this.selection = new app.Selection;
+
         new app.SelectionView({
             model: selection,
             paper: this.paper
         });
 
-        this.paper.on('cell:pointerup', function(cellView) {
+        this.listenTo(this.paper, 'cell:pointerup', function(cellView) {
             if (!cellView.model.isLink()) {
                 selection.reset([cellView.model]);
             }
         });
-        this.paper.on('blank:pointerdown', function() {
+
+        this.listenTo(this.paper, 'blank:pointerdown', function() {
             selection.reset([]);
         });
 
-        selection.on('add reset', this.onSelectionChange, this);
+        this.listenTo(selection, 'add reset', this.onSelectionChange);
+
+        /* my editor view */
+        app.editor = {
+            triggers: {}
+        };
+
+        app.editor.TriggerView = Backbone.View.extend({
+            el: "#element-type",
+            events: {
+                "change #trigger-type": "onTriggerTypeChange",
+                "change #trigger-name": "onTriggerNameChange",
+                "keyup #trigger-name": "onTriggerNameChange",
+            },
+            initialize: function() {
+                this.template = _.template($('#trigger-type-template').html());
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template({
+                    model: this.getTriggerParams(),
+                }));
+
+                //instantiate child view if the type of trigger is set
+                if (this.getTriggerParams().type != '') this.createParametersView();
+            },
+            getTriggerParams: function() {
+                //helper function to return the first item in the settings object - array is not used as to maintain convention with backend format 
+                var currentData = this.model.get('scenario_data');
+                return currentData[Object.keys(currentData)[0]]
+            },
+            createParametersView: function(type) {
+                if (this.parameterView) this.parameterView.remove();
+                this.parameterView = new window["app"]["editor"]["triggers"][this.getTriggerParams().type + "View"]({
+                    model: this.getTriggerParams()
+                });
+            },
+            onTriggerTypeChange: function(evt) {
+                //When the trigger type is changed, the scenario data is overwritten with default values
+                var currentData = this.model.get('scenario_data');
+                var new_data = window["app"]["Factory"]["createTriggerType" + evt.currentTarget.value](Object.keys(currentData)[0]);
+                this.model.set('scenario_data', new_data);
+
+                //Create view for trigger type passing through details for the trigger and clean up any existing view
+                this.createParametersView();
+            },
+            onTriggerNameChange: function(evt) {
+                this.model.attr(".trigger-text", {
+                    text: evt.currentTarget.value
+                });
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+        app.editor.EditableElementView = Backbone.View.extend({
+            storeChangedValue: function(evt) {
+                this.model.params[evt.currentTarget.id] = evt.currentTarget.value;
+            }
+        });
+
+        //convention over configuration
+        //all ids in json must match the ids of the elements responsible for gathering data
+
+        app.editor.triggers.TimeLimitView = app.editor.EditableElementView.extend({
+            el: "#trigger-parameters",
+            events: {
+                "keyup #time_limit": "storeChangedValue",
+            },
+            initialize: function() {
+                this.template = _.template($('#trigger-type-time-limit-template').html());
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template({
+                    model: this.model
+                }));
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+        app.editor.triggers.GiveDrugView = app.editor.EditableElementView.extend({
+            el: "#trigger-parameters",
+            events: {
+                "change #drug": "storeChangedValue",
+                "change #dose_unit": "storeChangedValue",
+                "change #comparison": "storeChangedValue",
+                "keyup #dose": "storeChangedValue",
+            },
+            initialize: function() {
+                this.template = _.template($('#trigger-type-give-drug-template').html());
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template({
+                    model: this.model
+                }));
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+
+    },
+
+    //Each trigger, modifier or whatever is going to have its own logic when it comes to how it manipulates the 
+    //data model of the selected element, therefore, each one will live in its own separate view
+
+    onSelectionChange: function(collection) {
+        var cell = collection.first();
+        if (cell) {
+
+            var view_type_class;
+            switch (cell.get('type')) {
+                case 'qad.Trigger':
+                    view_type_class = app.editor.TriggerView
+            }
+
+            if (view_type_class) {
+                //Cleanup parent view if required
+                if (this.parent_view) this.parent_view.remove();
+                this.parent_view = new view_type_class({
+                    model: collection.first()
+                })
+            };
+
+        } else {
+            this.status('Selection emptied.');
+        }
     },
 
     initializePaper: function() {
@@ -256,12 +382,11 @@ app.AppView = Backbone.View.extend({
                 return false;
             },
             validateMagnet: function(cellView, magnet) {
-                //return magnet.getAttribute('port-group') !== 'in';
                 return true;
             },
             defaultLink: new joint.dia.Link({
                 router: {
-                    name: 'manhattan'
+                    name: 'metro'
                 },
                 connector: {
                     name: 'rounded'
@@ -281,15 +406,6 @@ app.AppView = Backbone.View.extend({
         });
     },
 
-    onSelectionChange: function(collection) {
-
-        var cell = collection.first();
-        if (cell) {
-            this.status('Selection: ' + cell.get('type'));
-        } else {
-            this.status('Selection emptied.');
-        }
-    },
 
     // Show a message in the statusbar.
     status: function(m) {
@@ -327,544 +443,7 @@ app.AppView = Backbone.View.extend({
         });
     },
 
-    loadExample: function() {
-
-        this.graph.fromJSON({
-            "cells": [{
-                "type": "qad.Question",
-                "size": {
-                    "width": 201.8984375,
-                    "height": 125
-                },
-                "position": {
-                    "x": 45,
-                    "y": 38
-                },
-                "angle": 0,
-                "question": "Does the thing work?",
-                "options": [{
-                    "id": "yes",
-                    "text": "Yes"
-                }, {
-                    "id": "no",
-                    "text": "No"
-                }],
-                "id": "d849d917-8a43-4d51-9e99-291799c144db",
-                "z": 1,
-                "attrs": {
-                    ".options": {
-                        "ref-y": 45
-                    },
-                    ".question-text": {
-                        "text": "Does the thing work?"
-                    },
-                    ".option-yes": {
-                        "transform": "translate(0, 0)",
-                        "dynamic": true
-                    },
-                    ".option-yes .option-rect": {
-                        "height": 30,
-                        "dynamic": true
-                    },
-                    ".option-yes .option-port .port-body": {
-                        "port": "yes",
-                        "dynamic": true
-                    },
-                    ".option-yes .option-text": {
-                        "text": "Yes",
-                        "dynamic": true
-                    },
-                    ".option-no": {
-                        "transform": "translate(0, 30)",
-                        "dynamic": true
-                    },
-                    ".option-no .option-rect": {
-                        "height": 30,
-                        "dynamic": true
-                    },
-                    ".option-no .option-port .port-body": {
-                        "port": "no",
-                        "dynamic": true
-                    },
-                    ".option-no .option-text": {
-                        "text": "No",
-                        "dynamic": true
-                    },
-                    ".inPorts>.port-in>.port-label": {
-                        "text": "In"
-                    },
-                    ".inPorts>.port-in>.port-body": {
-                        "port": {
-                            "id": "in",
-                            "type": "in",
-                            "label": "In"
-                        }
-                    },
-                    ".inPorts>.port-in": {
-                        "ref": ".body",
-                        "ref-x": 0.5
-                    }
-                }
-            }, {
-                "type": "qad.Answer",
-                "size": {
-                    "width": 223.796875,
-                    "height": 66.8
-                },
-                "inPorts": [{
-                    "id": "in",
-                    "label": "In"
-                }],
-                "outPorts": [{
-                    "id": "yes",
-                    "label": "Yes"
-                }, {
-                    "id": "no",
-                    "label": "No"
-                }],
-                "position": {
-                    "x": 464,
-                    "y": 68
-                },
-                "angle": 0,
-                "answer": "Don't mess about with it.",
-                "id": "4073e883-1cc6-46a5-b22d-688ca1934324",
-                "z": 2,
-                "attrs": {
-                    "text": {
-                        "text": "Don't mess about with it."
-                    }
-                }
-            }, {
-                "type": "link",
-                "source": {
-                    "id": "d849d917-8a43-4d51-9e99-291799c144db",
-                    "selector": "g:nth-child(1) g:nth-child(3) g:nth-child(1) g:nth-child(4) circle:nth-child(1)      ",
-                    "port": "yes"
-                },
-                "target": {
-                    "id": "4073e883-1cc6-46a5-b22d-688ca1934324"
-                },
-                "router": {
-                    "name": "manhattan"
-                },
-                "connector": {
-                    "name": "rounded"
-                },
-                "id": "9d87214a-7b08-47ce-9aec-8e49ed7ae929",
-                "embeds": "",
-                "z": 3,
-                "attrs": {
-                    ".marker-target": {
-                        "d": "M 10 0 L 0 5 L 10 10 z",
-                        "fill": "#6a6c8a",
-                        "stroke": "#6a6c8a"
-                    },
-                    ".connection": {
-                        "stroke": "#6a6c8a",
-                        "stroke-width": 2
-                    }
-                }
-            }, {
-                "type": "qad.Question",
-                "size": {
-                    "width": 195.6484375,
-                    "height": 125
-                },
-                "position": {
-                    "x": 55,
-                    "y": 245
-                },
-                "angle": 0,
-                "question": "Did you mess about with it?",
-                "options": [{
-                    "id": "yes",
-                    "text": "Yes"
-                }, {
-                    "id": "no",
-                    "text": "No"
-                }],
-                "id": "8ce3f820-54f0-41f0-a46c-1e4f57b5f91e",
-                "z": 4,
-                "attrs": {
-                    ".options": {
-                        "ref-y": 45
-                    },
-                    ".question-text": {
-                        "text": "Did you mess about with it?"
-                    },
-                    ".option-yes": {
-                        "transform": "translate(0, 0)",
-                        "dynamic": true
-                    },
-                    ".option-yes .option-rect": {
-                        "height": 30,
-                        "dynamic": true
-                    },
-                    ".option-yes .option-port .port-body": {
-                        "port": "yes",
-                        "dynamic": true
-                    },
-                    ".option-yes .option-text": {
-                        "text": "Yes",
-                        "dynamic": true
-                    },
-                    ".option-no": {
-                        "transform": "translate(0, 30)",
-                        "dynamic": true
-                    },
-                    ".option-no .option-rect": {
-                        "height": 30,
-                        "dynamic": true
-                    },
-                    ".option-no .option-port .port-body": {
-                        "port": "no",
-                        "dynamic": true
-                    },
-                    ".option-no .option-text": {
-                        "text": "No",
-                        "dynamic": true
-                    },
-                    ".inPorts>.port-in>.port-label": {
-                        "text": "In"
-                    },
-                    ".inPorts>.port-in>.port-body": {
-                        "port": {
-                            "id": "in",
-                            "type": "in",
-                            "label": "In"
-                        }
-                    },
-                    ".inPorts>.port-in": {
-                        "ref": ".body",
-                        "ref-x": 0.5
-                    }
-                }
-            }, {
-                "type": "qad.Answer",
-                "size": {
-                    "width": 156.234375,
-                    "height": 66.8
-                },
-                "inPorts": [{
-                    "id": "in",
-                    "label": "In"
-                }],
-                "outPorts": [{
-                    "id": "yes",
-                    "label": "Yes"
-                }, {
-                    "id": "no",
-                    "label": "No"
-                }],
-                "position": {
-                    "x": 343,
-                    "y": 203
-                },
-                "angle": 0,
-                "answer": "Run away!",
-                "id": "7da45291-2535-4aa1-bb50-5cadd2b2fb91",
-                "z": 5,
-                "attrs": {
-                    "text": {
-                        "text": "Run away!"
-                    }
-                }
-            }, {
-                "type": "link",
-                "source": {
-                    "id": "8ce3f820-54f0-41f0-a46c-1e4f57b5f91e",
-                    "selector": "g:nth-child(1) g:nth-child(3) g:nth-child(1) g:nth-child(4) circle:nth-child(1)      ",
-                    "port": "yes"
-                },
-                "target": {
-                    "id": "7da45291-2535-4aa1-bb50-5cadd2b2fb91"
-                },
-                "router": {
-                    "name": "manhattan"
-                },
-                "connector": {
-                    "name": "rounded"
-                },
-                "id": "fd9f3367-79b9-4f69-b5b7-2bba012e53bb",
-                "embeds": "",
-                "z": 6,
-                "attrs": {
-                    ".marker-target": {
-                        "d": "M 10 0 L 0 5 L 10 10 z",
-                        "fill": "#6a6c8a",
-                        "stroke": "#6a6c8a"
-                    },
-                    ".connection": {
-                        "stroke": "#6a6c8a",
-                        "stroke-width": 2
-                    }
-                }
-            }, {
-                "type": "qad.Question",
-                "size": {
-                    "width": 155.6171875,
-                    "height": 125
-                },
-                "position": {
-                    "x": 238,
-                    "y": 429
-                },
-                "angle": 0,
-                "question": "Will you get screwed?",
-                "options": [{
-                    "id": "yes",
-                    "text": "Yes"
-                }, {
-                    "id": "no",
-                    "text": "No"
-                }],
-                "id": "fd3e0ab4-fd3a-4342-972b-3616e0c0a5cf",
-                "z": 7,
-                "attrs": {
-                    ".options": {
-                        "ref-y": 45
-                    },
-                    ".question-text": {
-                        "text": "Will you get screwed?"
-                    },
-                    ".option-yes": {
-                        "transform": "translate(0, 0)",
-                        "dynamic": true
-                    },
-                    ".option-yes .option-rect": {
-                        "height": 30,
-                        "dynamic": true
-                    },
-                    ".option-yes .option-port .port-body": {
-                        "port": "yes",
-                        "dynamic": true
-                    },
-                    ".option-yes .option-text": {
-                        "text": "Yes",
-                        "dynamic": true
-                    },
-                    ".option-no": {
-                        "transform": "translate(0, 30)",
-                        "dynamic": true
-                    },
-                    ".option-no .option-rect": {
-                        "height": 30,
-                        "dynamic": true
-                    },
-                    ".option-no .option-port .port-body": {
-                        "port": "no",
-                        "dynamic": true
-                    },
-                    ".option-no .option-text": {
-                        "text": "No",
-                        "dynamic": true
-                    },
-                    ".inPorts>.port-in>.port-label": {
-                        "text": "In"
-                    },
-                    ".inPorts>.port-in>.port-body": {
-                        "port": {
-                            "id": "in",
-                            "type": "in",
-                            "label": "In"
-                        }
-                    },
-                    ".inPorts>.port-in": {
-                        "ref": ".body",
-                        "ref-x": 0.5
-                    }
-                }
-            }, {
-                "type": "link",
-                "source": {
-                    "id": "d849d917-8a43-4d51-9e99-291799c144db",
-                    "selector": "g:nth-child(1) g:nth-child(3) g:nth-child(2) g:nth-child(4) circle:nth-child(1)      ",
-                    "port": "no"
-                },
-                "target": {
-                    "id": "8ce3f820-54f0-41f0-a46c-1e4f57b5f91e",
-                    "selector": "g:nth-child(1) g:nth-child(4) g:nth-child(1) circle:nth-child(1)     ",
-                    "port": "in"
-                },
-                "router": {
-                    "name": "manhattan"
-                },
-                "connector": {
-                    "name": "rounded"
-                },
-                "id": "641410b2-aeb5-42ad-b757-2d9c6e4d56bd",
-                "embeds": "",
-                "z": 8,
-                "attrs": {
-                    ".marker-target": {
-                        "d": "M 10 0 L 0 5 L 10 10 z",
-                        "fill": "#6a6c8a",
-                        "stroke": "#6a6c8a"
-                    },
-                    ".connection": {
-                        "stroke": "#6a6c8a",
-                        "stroke-width": 2
-                    }
-                }
-            }, {
-                "type": "link",
-                "source": {
-                    "id": "8ce3f820-54f0-41f0-a46c-1e4f57b5f91e",
-                    "selector": "g:nth-child(1) g:nth-child(3) g:nth-child(2) g:nth-child(4) circle:nth-child(1)      ",
-                    "port": "no"
-                },
-                "target": {
-                    "id": "fd3e0ab4-fd3a-4342-972b-3616e0c0a5cf",
-                    "selector": "g:nth-child(1) g:nth-child(4) g:nth-child(1) circle:nth-child(1)     ",
-                    "port": "in"
-                },
-                "router": {
-                    "name": "manhattan"
-                },
-                "connector": {
-                    "name": "rounded"
-                },
-                "id": "3b9de57d-be21-4e9e-a73b-693b32e5f14a",
-                "embeds": "",
-                "z": 9,
-                "attrs": {
-                    ".marker-target": {
-                        "d": "M 10 0 L 0 5 L 10 10 z",
-                        "fill": "#6a6c8a",
-                        "stroke": "#6a6c8a"
-                    },
-                    ".connection": {
-                        "stroke": "#6a6c8a",
-                        "stroke-width": 2
-                    }
-                }
-            }, {
-                "type": "qad.Answer",
-                "size": {
-                    "width": 177.1953125,
-                    "height": 66.8
-                },
-                "inPorts": [{
-                    "id": "in",
-                    "label": "In"
-                }],
-                "outPorts": [{
-                    "id": "yes",
-                    "label": "Yes"
-                }, {
-                    "id": "no",
-                    "label": "No"
-                }],
-                "position": {
-                    "x": 545,
-                    "y": 400
-                },
-                "angle": 0,
-                "answer": "Poor boy.",
-                "id": "13402455-006d-41e3-aacc-514f551b78b8",
-                "z": 10,
-                "attrs": {
-                    "text": {
-                        "text": "Poor boy."
-                    }
-                }
-            }, {
-                "type": "qad.Answer",
-                "size": {
-                    "width": 146.9453125,
-                    "height": 66.8
-                },
-                "inPorts": [{
-                    "id": "in",
-                    "label": "In"
-                }],
-                "outPorts": [{
-                    "id": "yes",
-                    "label": "Yes"
-                }, {
-                    "id": "no",
-                    "label": "No"
-                }],
-                "position": {
-                    "x": 553,
-                    "y": 524
-                },
-                "angle": 0,
-                "answer": "Put it in a bin.",
-                "id": "857c9deb-86c3-47d8-bc6d-8f36c5294eab",
-                "z": 11,
-                "attrs": {
-                    "text": {
-                        "text": "Put it in a bin."
-                    }
-                }
-            }, {
-                "type": "link",
-                "source": {
-                    "id": "fd3e0ab4-fd3a-4342-972b-3616e0c0a5cf",
-                    "selector": "g:nth-child(1) g:nth-child(3) g:nth-child(1) g:nth-child(4) circle:nth-child(1)      ",
-                    "port": "yes"
-                },
-                "target": {
-                    "id": "13402455-006d-41e3-aacc-514f551b78b8"
-                },
-                "router": {
-                    "name": "manhattan"
-                },
-                "connector": {
-                    "name": "rounded"
-                },
-                "id": "7e96039d-c3d4-4c86-b8e5-9a49835e114b",
-                "embeds": "",
-                "z": 12,
-                "attrs": {
-                    ".marker-target": {
-                        "d": "M 10 0 L 0 5 L 10 10 z",
-                        "fill": "#6a6c8a",
-                        "stroke": "#6a6c8a"
-                    },
-                    ".connection": {
-                        "stroke": "#6a6c8a",
-                        "stroke-width": 2
-                    }
-                }
-            }, {
-                "type": "link",
-                "source": {
-                    "id": "fd3e0ab4-fd3a-4342-972b-3616e0c0a5cf",
-                    "selector": "g:nth-child(1) g:nth-child(3) g:nth-child(2) g:nth-child(4) circle:nth-child(1)      ",
-                    "port": "no"
-                },
-                "target": {
-                    "id": "857c9deb-86c3-47d8-bc6d-8f36c5294eab"
-                },
-                "router": {
-                    "name": "manhattan"
-                },
-                "connector": {
-                    "name": "rounded"
-                },
-                "id": "eecaae21-3e81-43f9-a5c1-6ea40c1adba8",
-                "embeds": "",
-                "z": 13,
-                "attrs": {
-                    ".marker-target": {
-                        "d": "M 10 0 L 0 5 L 10 10 z",
-                        "fill": "#6a6c8a",
-                        "stroke": "#6a6c8a"
-                    },
-                    ".connection": {
-                        "stroke": "#6a6c8a",
-                        "stroke-width": 2
-                    }
-                }
-            }]
-        });
-    },
-
     clear: function() {
-
         this.graph.clear();
     },
 

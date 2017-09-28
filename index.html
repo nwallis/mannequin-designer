@@ -12,7 +12,6 @@
     <link href="css/paper.css" rel="stylesheet"/>
     <link href="css/preview.css" rel="stylesheet"/>
     <link href="css/tooltip.css" rel="stylesheet"/>
-    <link href="css/snippet.css" rel="stylesheet"/>
     <link href="css/dialog.css" rel="stylesheet"/>
     <link href="css/index.css" rel="stylesheet"/>
 
@@ -37,11 +36,13 @@
         <button class="btn add-answer">Add Answer</button>
         <button class="btn preview-dialog">Preview Dialog</button>
         <button class="btn code-snippet">Code Snippet</button>
-        <button class="btn clear">Clear Canvas</button>
-        <button class="btn load-example">Load Example</button>
       </div>
 
-      <div id="paper"></div>
+      <div id="paper" style="float:left;"></div>
+      <div id="editor-container" style="float:right;width:400px;">
+        <div id="element-type"></div>
+      </div>
+      <div style="clear:both;"></div>
 
       <div id="statusbar">
         <span class="message">Welcome to the QAD Tool!</span>
@@ -60,10 +61,8 @@
     <script src="src/joint.shapes.qad.js"></script>
     <script src="src/selection.js"></script>
     <script src="src/factory.js"></script>
-    <script src="src/snippet.js"></script>
     <script src="src/app.js"></script>
     <script src="src/index.js"></script>
-    <script>joint.setTheme('modern');</script>
 
     <script type="text/template" id="question-template">
       <g class="rotatable">
@@ -94,6 +93,50 @@
         <path class="btn-remove-modifier" d="M0,0 15,0 15,5 0,5z"></path>
         <text class="option-text"></text>
       </g>
+    </script>
+
+    <script type="text/template" id="trigger-type-time-limit-template">
+      <label for="time_limit">Duration</label>
+      <input type="text" id="time_limit" value="<%= model.params.time_limit %>">
+    </script>
+    <script type="text/template" id="trigger-type-give-drug-template">
+
+      <label for="comparison">Comparison</label>
+      <select id="comparison">
+        <option value="">Please select...</option>
+        <option value="at_least" <%= (model.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
+        <option value="no_more_than" <%= (model.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
+        <option value="exactly" <%= (model.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
+      </select>
+
+      <label for="dose">Dose</label>
+      <input type="text" id="dose" placholder="Enter a value" value="<%= model.params.dose %>">
+
+      <label for="dose_unit">Unit</label>
+      <select id="dose_unit">
+        <option value="">Please select...</option>
+        <option value="mg" <%= (model.params.dose_unit == 'mg') ? "selected" : "" %>>mg</option>
+        <option value="kg" <%= (model.params.dose_unit == 'kg') ? "selected" : "" %>>kg</option>
+      </select>
+
+      <label for="drug">Drug name</label>
+      <select id="drug" name="">
+        <option value="">Please select...</option>
+        <option value="panadol" <%= (model.params.drug == 'panadol') ? "selected" : "" %>>Panadol</option>
+        <option value="neurophen" <%= (model.params.drug == 'neurophen') ? "selected" : "" %>>Neurophen</option>
+      </select>
+    </script>
+
+    <script type="text/template" id="trigger-type-template">
+      <label for="trigger-name">Trigger name</label>
+      <input type="text" id="trigger-name" placeholder="trigger name"/>
+      <label for="trigger-type">Trigger type</label>
+      <select id="trigger-type" name="">
+        <option value="">Please select..</option>
+        <option value="GiveDrug" <%= (model.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
+        <option value="TimeLimit" <%= (model.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
+      </select>
+      <div id="trigger-parameters"></div>
     </script>
 
   </body>
