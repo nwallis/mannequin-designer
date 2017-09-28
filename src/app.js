@@ -279,16 +279,19 @@ app.AppView = Backbone.View.extend({
             }
         });
 
-        app.editor.triggers.TimeLimitView = Backbone.View.extend({
+        app.editor.EditableElementView = Backbone.View.extend({
+            storeChangedValue: function(evt) {
+                this.model.params[evt.currentTarget.id] = evt.currentTarget.value;
+            }
+        });
+
+        //convention over configuration
+        //all ids in json must match the ids of the elements responsible for gathering data
+
+        app.editor.triggers.TimeLimitView = app.editor.EditableElementView.extend({
             el: "#trigger-parameters",
             events: {
-                "keyup #time_limit": "onTimeLimitChange",
-            },
-            onTimeLimitChange: function(evt) {
-                this.storeDropDownValue('time_limit', evt);
-            },
-            storeDropDownValue: function(param_key, evt) {
-                this.model.params[param_key] = evt.currentTarget.value;
+                "keyup #time_limit": "storeChangedValue",
             },
             initialize: function() {
                 this.template = _.template($('#trigger-type-time-limit-template').html());
@@ -306,29 +309,13 @@ app.AppView = Backbone.View.extend({
             }
         });
 
-        app.editor.triggers.GiveDrugView = Backbone.View.extend({
+        app.editor.triggers.GiveDrugView = app.editor.EditableElementView.extend({
             el: "#trigger-parameters",
             events: {
-                "change #drug": "onDrugChange",
-                "change #dose_unit": "onDoseUnitChange",
-                "change #comparison": "onComparisonChange",
-                "keyup #dose": "onDoseChange",
-            },
-            onDoseUnitChange: function(evt) {
-                this.storeDropDownValue('dose_unit', evt);
-            },
-            onComparisonChange: function(evt) {
-                this.storeDropDownValue('comparison', evt);
-            },
-            onDrugChange: function(evt) {
-                this.storeDropDownValue('drug', evt);
-            },
-            onDoseChange: function(evt) {
-                this.storeDropDownValue('dose', evt);
-            },
-            //pull to common class for triggers and modifiers
-            storeDropDownValue: function(param_key, evt) {
-                this.model.params[param_key] = evt.currentTarget.value;
+                "change #drug": "storeChangedValue",
+                "change #dose_unit": "storeChangedValue",
+                "change #comparison": "storeChangedValue",
+                "keyup #dose": "storeChangedValue",
             },
             initialize: function() {
                 this.template = _.template($('#trigger-type-give-drug-template').html());
@@ -345,6 +332,7 @@ app.AppView = Backbone.View.extend({
                 return this;
             }
         });
+
 
     },
 
