@@ -12,7 +12,6 @@
     <link href="css/paper.css" rel="stylesheet"/>
     <link href="css/preview.css" rel="stylesheet"/>
     <link href="css/tooltip.css" rel="stylesheet"/>
-    <link href="css/snippet.css" rel="stylesheet"/>
     <link href="css/dialog.css" rel="stylesheet"/>
     <link href="css/index.css" rel="stylesheet"/>
 
@@ -39,7 +38,12 @@
         <button class="btn code-snippet">Code Snippet</button>
       </div>
 
-      <div id="paper"></div>
+      <div id="paper" style="float:left;"></div>
+      <div id="editor-container" style="float:right;">
+        <div id="element-type"></div>
+        <div id="element-parameters"></div>
+      </div>
+      <div style="clear:both;"></div>
 
       <div id="statusbar">
         <span class="message">Welcome to the QAD Tool!</span>
@@ -58,10 +62,8 @@
     <script src="src/joint.shapes.qad.js"></script>
     <script src="src/selection.js"></script>
     <script src="src/factory.js"></script>
-    <script src="src/snippet.js"></script>
     <script src="src/app.js"></script>
     <script src="src/index.js"></script>
-    <script>joint.setTheme('modern');</script>
 
     <script type="text/template" id="question-template">
       <g class="rotatable">
@@ -92,6 +94,16 @@
         <path class="btn-remove-modifier" d="M0,0 15,0 15,5 0,5z"></path>
         <text class="option-text"></text>
       </g>
+    </script>
+
+    <script type="text/template" id="trigger-type-template">
+      <input type="text" id="trigger-name" placeholder="trigger name"/>
+      <label for="trigger-type">Trigger type</label>
+      <select id="trigger-type" name="">
+        <option value="">Please select..</option>
+        <option value="GiveDrug" <%= (params.get('scenario_data').type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
+        <option value="TimeLimit" <%= (params.get('scenario_data').type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
+      </select>
     </script>
 
   </body>

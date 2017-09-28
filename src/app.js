@@ -36,17 +36,12 @@ app.AppView = Backbone.View.extend({
         'click #toolbar .code-snippet': 'showCodeSnippet',
         'click #toolbar .load-example': 'loadExample',
         'click #toolbar .clear': 'clear',
-        'click': 'onTriggerSelected',
-    },
-
-    onTriggerSelected: function(evt) {
-        console.log("trigger selected");
     },
 
     initialize: function() {
         this.initializePaper();
         this.initializeSelection();
-        this.initializeHalo();
+        //this.initializeHalo();
         //this.initializeInlineTextEditor();
         this.initializeTooltips();
     },
@@ -209,35 +204,103 @@ app.AppView = Backbone.View.extend({
 
     initializeSelection: function() {
 
-        document.body.addEventListener('keydown', _.bind(function(evt) {
-
-            var code = evt.which || evt.keyCode;
-            // Do not remove the element with backspace if we're in inline text editing.
-            if ((code === 8 || code === 46) && !this.textEditor && this.selection.first()) {
-
-                this.selection.first().remove();
-                this.selection.reset();
-                return false;
-            }
-
-        }, this), false);
-
         var selection = this.selection = new app.Selection;
+
         new app.SelectionView({
             model: selection,
             paper: this.paper
         });
 
-        this.paper.on('cell:pointerup', function(cellView) {
+        this.listenTo(this.paper, 'cell:pointerup', function(cellView) {
             if (!cellView.model.isLink()) {
                 selection.reset([cellView.model]);
             }
         });
-        this.paper.on('blank:pointerdown', function() {
+
+        this.listenTo(this.paper, 'blank:pointerdown', function() {
             selection.reset([]);
         });
 
-        selection.on('add reset', this.onSelectionChange, this);
+        this.listenTo(selection, 'add reset', this.onSelectionChange);
+
+        /* my editor view */
+        app.editor = {
+            triggers: {}
+        };
+
+        app.editor.TriggerView = Backbone.View.extend({
+            el: "#element-type",
+            events: {
+                "change #trigger-type": "onTriggerTypeChange",
+                "change #trigger-name": "onTriggerNameChange",
+                "keyup #trigger-name": "onTriggerNameChange",
+            },
+            initialize: function() {
+                this.render();
+            },
+            render: function() {
+                var element_model = this.model.first();
+                template = _.template($('#trigger-type-template').html());
+                this.$el.html(template({
+                    params: element_model
+                }));
+            },
+            onTriggerTypeChange: function(evt) {
+                console.log(evt.currentTarget.value);
+                console.log(app.Factory.createTriggerTypeTimeLimit('my_trigger_name', 100, ''));
+            },
+            onTriggerNameChange: function(evt) {
+                this.model.first().attr(".trigger-text", {
+                    text: evt.currentTarget.value
+                });
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+        app.editor.triggers.GiveDrugView = Backbone.View.extend({
+            el: "#element-parameters",
+            initialize: function() {
+                this.listenTo(this.model, "reset", this.render);
+            },
+            render: function() {
+                return "shit from child";
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+    },
+
+    //Each trigger, modifier or whatever is going to have its own logic when it comes to how it manipulates the 
+    //data model of the selected element, therefore, each one will live in its own separate view
+
+    onSelectionChange: function(collection) {
+        var cell = collection.first();
+        if (cell) {
+
+            var view_type_class;
+            switch (cell.get('type')) {
+                case 'qad.Trigger':
+                    view_type_class = app.editor.TriggerView
+            }
+
+            if (view_type_class) new view_type_class({
+                model: collection
+            });
+
+        } else {
+
+            //Clean up side window views
+
+            this.status('Selection emptied.');
+        }
     },
 
     initializePaper: function() {
@@ -260,7 +323,6 @@ app.AppView = Backbone.View.extend({
                 return false;
             },
             validateMagnet: function(cellView, magnet) {
-                //return magnet.getAttribute('port-group') !== 'in';
                 return true;
             },
             defaultLink: new joint.dia.Link({
@@ -285,15 +347,6 @@ app.AppView = Backbone.View.extend({
         });
     },
 
-    onSelectionChange: function(collection) {
-
-        var cell = collection.first();
-        if (cell) {
-            this.status('Selection: ' + cell.get('type'));
-        } else {
-            this.status('Selection emptied.');
-        }
-    },
 
     // Show a message in the statusbar.
     status: function(m) {

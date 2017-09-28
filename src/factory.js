@@ -2,6 +2,32 @@ var app = app || {};
 
 app.Factory = {
 
+    createBlankTrigger: function(name, type, params) {
+        var trigger = {};
+        trigger[name] = {
+            type: type,
+            params: params
+        }
+        return trigger;
+    },
+
+    createTriggerTypeTimeLimit: function(name, time_limit, linked_state) {
+        return this.createBlankTrigger(name, "TimeLimit", {
+            "time_limit": time_limit,
+            "linked_state": linked_state
+        });
+    },
+
+    createTriggerTypeGiveDrug: function(name, comparison, drug, dose, dose_unit, linked_state) {
+        return this.createBlankTrigger(name, "TimeLimit", {
+            "comparison": comparison,
+            "drug": drug,
+            "dose": dose,
+            "dose_unit": dose_unit,
+            "linked_state": linked_state
+        });
+    },
+
     createTrigger: function(id, text) {
         var q = new joint.shapes.qad.Trigger({
             id: 'trigger-' + id,
@@ -29,18 +55,7 @@ app.Factory = {
                     args: {},
                 }]
             },
-            "data": {
-                "give_panadol": {
-                    "type": "GiveDrug",
-                    "params": {
-                        "comparison": "at_least",
-                        "drug": "panadol",
-                        "dose": 100,
-                        "dose_unit": "mg",
-                        "linked_state": "patient_feeling_better"
-                    }
-                }
-            }
+            scenario_data: {}
         });
         return q;
     },
