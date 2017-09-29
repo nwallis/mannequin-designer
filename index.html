@@ -159,6 +159,24 @@
           </select>
         </div>
       </div>
+      <div class="row">
+        <div class="col">
+          <table>
+            <thead>
+              <tr>
+                <td>Ob</td>
+                <td>Value</td>
+              </tr>
+            </thead>
+            <% for(var ob in model.obs){  %>
+            <tr>
+              <td><%= ob %></td>
+              <td><%= model.obs[ob] %></td>
+            </tr>
+            <% } %>
+          </table>
+        </div>
+      </div>
     </script>
 
     <script type="text/template" id="trigger-type-template">
