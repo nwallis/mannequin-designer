@@ -1,16 +1,3 @@
-/*! Rappid v2.1.0 - HTML5 Diagramming Framework - TRIAL VERSION
-
-Copyright (c) 2015 client IO
-
- 2017-09-14 
-
-
-This Source Code Form is subject to the terms of the Rappid Trial License
-, v. 2.0. If a copy of the Rappid License was not distributed with this
-file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
- or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
-
-
 // @import jquery.js
 // @import lodash.js
 // @import backbone.js
@@ -123,6 +110,25 @@ app.AppView = Backbone.View.extend({
             triggers: {}
         };
 
+        app.editor.StateView = Backbone.View.extend({
+            el: "#element-type",
+            initialize: function() {
+                this.template = _.template($('#state-parameters-template').html());
+                this.render();
+            },
+            render: function() {
+                console.log(this.model);
+                this.$el.html(this.template({
+                    model: this.model
+                }));
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
         app.editor.TriggerView = Backbone.View.extend({
             el: "#element-type",
             events: {
@@ -231,11 +237,13 @@ app.AppView = Backbone.View.extend({
     onSelectionChange: function(collection) {
         var cell = collection.first();
         if (cell) {
-
             var view_type_class;
             switch (cell.get('type')) {
                 case 'qad.Trigger':
-                    view_type_class = app.editor.TriggerView
+                    view_type_class = app.editor.TriggerView;
+                    break;
+                case 'qad.Question':
+                    view_type_class = app.editor.StateView;
             }
 
             if (view_type_class) {
