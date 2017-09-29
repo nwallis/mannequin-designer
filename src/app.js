@@ -116,8 +116,16 @@ app.AppView = Backbone.View.extend({
                 this.template = _.template($('#state-parameters-template').html());
                 this.render();
             },
+            events: {
+                "change #state-name": "onTriggerNameChange",
+                "keyup #state-name": "onTriggerNameChange",
+            },
+            onTriggerNameChange: function(evt) {
+                this.model.attr(".question-text", {
+                    text: evt.currentTarget.value
+                });
+            },
             render: function() {
-                console.log(this.model);
                 this.$el.html(this.template({
                     model: this.model
                 }));
