@@ -117,8 +117,14 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             events: {
+                "change #ob-select": "onObChange",
                 "change #state-name": "onTriggerNameChange",
                 "keyup #state-name": "onTriggerNameChange",
+            },
+            onObChange: function(evt) {
+                //clone the element that represents this ob
+                //add it to the table of obs
+                //provide option to delete the ob
             },
             onTriggerNameChange: function(evt) {
                 this.model.attr(".question-text", {
@@ -126,9 +132,7 @@ app.AppView = Backbone.View.extend({
                 });
             },
             render: function() {
-                this.$el.html(this.template({
-                    model: this.model
-                }));
+                this.$el.html(this.template(this.model.getTemplateParams()));
             },
             remove: function() {
                 this.$el.empty().off();

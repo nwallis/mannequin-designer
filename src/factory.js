@@ -6,7 +6,9 @@ app.Factory = {
         if (name == undefined || name == '') throw new Error("State name cannot be empty");
         var state = {};
         state[name] = {
-            obs: {}
+            obs: {
+                heart_rate: 200
+            }
         }
         return state;
     },
