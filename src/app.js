@@ -17,7 +17,8 @@ var qad = window.qad || {};
 app.dictionary = {
     "ob_names": {
         "heart_rate": "Heart rate",
-        "foot_smell": "Foot smell"
+        "foot_smell": "Foot smell",
+        "hair_loss": "Hair loss",
     }
 }
 
