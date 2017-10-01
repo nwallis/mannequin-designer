@@ -140,9 +140,13 @@ app.AppView = Backbone.View.extend({
                 var selected_ob = $(evt.currentTarget.selectedOptions[0]);
                 var selected_ob_key = evt.currentTarget.value;
 
-                //determine if the key already exists, if so, highlight it instead of updating value
-                current_obs[selected_ob_key] = selected_ob.data('defaultValue');
-                this.render();
+                if (current_obs[selected_ob_key]) {
+                    $("#ob-value-" + selected_ob_key).focus();
+                } else {
+                    current_obs[selected_ob_key] = selected_ob.data('defaultValue');
+                    this.render();
+                }
+
             },
             onTriggerNameChange: function(evt) {
                 this.model.attr(".question-text", {
