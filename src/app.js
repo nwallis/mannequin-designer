@@ -1,16 +1,3 @@
-/*! Rappid v2.1.0 - HTML5 Diagramming Framework - TRIAL VERSION
-
-Copyright (c) 2015 client IO
-
- 2017-09-14 
-
-
-This Source Code Form is subject to the terms of the Rappid Trial License
-, v. 2.0. If a copy of the Rappid License was not distributed with this
-file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
- or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
-
-
 // @import jquery.js
 // @import lodash.js
 // @import backbone.js
@@ -22,8 +9,18 @@ file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
 // @import factory.js
 // @import snippet.js
 
-var app = app || {};
+var app = app || {
+    dictionary: {}
+};
 var qad = window.qad || {};
+
+app.dictionary = {
+    "ob_names": {
+        "heart_rate": "Heart rate",
+        "foot_smell": "Foot smell",
+        "hair_loss": "Hair loss",
+    }
+}
 
 app.AppView = Backbone.View.extend({
 
@@ -122,6 +119,50 @@ app.AppView = Backbone.View.extend({
         app.editor = {
             triggers: {}
         };
+
+        app.editor.StateView = Backbone.View.extend({
+            el: "#element-type",
+            initialize: function() {
+                this.template = _.template($('#state-parameters-template').html());
+                this.render();
+            },
+            events: {
+                "keyup .ob-value": "onObValueChange",
+                "change #ob-select": "onObChange",
+                "keyup #state-name": "onTriggerNameChange",
+            },
+            onObValueChange: function(evt) {
+                var current_obs = this.model.getTemplateParams().model.obs;
+                var edited_ob_key = $(evt.currentTarget).data('obKey');
+                current_obs[edited_ob_key] = evt.currentTarget.value;
+            },
+            onObChange: function(evt) {
+                var current_obs = this.model.getTemplateParams().model.obs;
+                var selected_ob = $(evt.currentTarget.selectedOptions[0]);
+                var selected_ob_key = evt.currentTarget.value;
+
+                if (current_obs[selected_ob_key]) {
+                    $("#ob-value-" + selected_ob_key).focus();
+                } else {
+                    current_obs[selected_ob_key] = selected_ob.data('defaultValue');
+                    this.render();
+                }
+
+            },
+            onTriggerNameChange: function(evt) {
+                this.model.attr(".question-text", {
+                    text: evt.currentTarget.value
+                });
+            },
+            render: function() {
+                this.$el.html(this.template(this.model.getTemplateParams()));
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
 
         app.editor.TriggerView = Backbone.View.extend({
             el: "#element-type",
@@ -231,11 +272,13 @@ app.AppView = Backbone.View.extend({
     onSelectionChange: function(collection) {
         var cell = collection.first();
         if (cell) {
-
             var view_type_class;
             switch (cell.get('type')) {
                 case 'qad.Trigger':
-                    view_type_class = app.editor.TriggerView
+                    view_type_class = app.editor.TriggerView;
+                    break;
+                case 'qad.Question':
+                    view_type_class = app.editor.StateView;
             }
 
             if (view_type_class) {

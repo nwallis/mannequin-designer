@@ -142,6 +142,44 @@
       </div>
     </script>
 
+    <script type="text/template" id="state-parameters-template">
+      <div class="row">
+        <div class="col">
+          <label for="state-name">State name</label>
+          <input type="text" id="state-name" value="<%= key_name %>"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="ob-select">Add ob</label>
+          <select id="ob-select" name="">
+            <option value="">Please select...</option>
+            <option value="heart_rate" data-default-value="0">Heart rate</option>
+            <option value="foot_smell" data-default-value="10">Foot smell</option>
+            <option value="hair_loss" data-default-value="22">Hair loss</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <table>
+            <thead>
+              <tr>
+                <td>Ob</td>
+                <td>Value</td>
+              </tr>
+            </thead>
+            <% for(var ob in model.obs){  %>
+            <tr>
+              <td><%= app.dictionary.ob_names[ob] || ob %></td> 
+              <td><input type="text" id="ob-value-<%= ob %>" class="ob-value" data-ob-key="<%= ob %>" value="<%= model.obs[ob] %>"/></td>
+            </tr>
+            <% } %>
+          </table>
+        </div>
+      </div>
+    </script>
+
     <script type="text/template" id="trigger-type-template">
       <div class="row">
         <div class="col">

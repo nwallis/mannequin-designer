@@ -2,8 +2,17 @@ var app = app || {};
 
 app.Factory = {
 
+    createStateFromParams: function(name, params) {
+        if (name == undefined || name == '') throw new Error("State name cannot be empty");
+        var state = {};
+        state[name] = {
+            obs: {}
+        }
+        return state;
+    },
+
     createTriggerFromParams: function(name, type, params) {
-        if (name == '') throw new Error("Trigger name cannot be empty");
+        if (name == undefined || name == '') throw new Error("Trigger name cannot be empty");
         var trigger = {};
         trigger[name] = {
             type: type || '',
@@ -76,7 +85,6 @@ app.Factory = {
     },
 
     createQuestion: function(text) {
-
         var q = new joint.shapes.qad.Question({
             position: {
                 x: 400 - 50,
@@ -92,7 +100,8 @@ app.Factory = {
                 label: 'In'
             }],
             options: [],
-            triggers: []
+            triggers: [],
+            scenario_data: app.Factory.createStateFromParams(text)
         });
         return q;
     },

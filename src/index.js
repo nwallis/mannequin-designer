@@ -185,6 +185,16 @@ $(function() {
         }
     }, {
 
+        //refactor this to common class functions
+        getTemplateParams: function() {
+            var currentData = this.get('scenario_data');
+            var key_name = Object.keys(currentData)[0];
+            return {
+                model: currentData[key_name],
+                key_name: key_name
+            };
+        },
+
         markup: $.trim($("#question-template").html()),
         optionMarkup: $.trim($("#modifier-template").html()),
         triggerMarkup: $.trim($("#trigger-template").html()),
