@@ -9,9 +9,7 @@
 // @import factory.js
 // @import snippet.js
 
-var app = app || {
-    dictionary: {}
-};
+var app = app || {};
 var qad = window.qad || {};
 
 app.dictionary = {
