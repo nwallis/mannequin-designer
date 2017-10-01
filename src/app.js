@@ -126,14 +126,21 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             events: {
+                "keyup .ob-value": "onObValueChange",
                 "change #ob-select": "onObChange",
-                "change #state-name": "onTriggerNameChange",
                 "keyup #state-name": "onTriggerNameChange",
+            },
+            onObValueChange: function(evt) {
+                var current_obs = this.model.getTemplateParams().model.obs;
+                var edited_ob_key = $(evt.currentTarget).data('obKey');
+                current_obs[edited_ob_key] = evt.currentTarget.value;
             },
             onObChange: function(evt) {
                 var current_obs = this.model.getTemplateParams().model.obs;
                 var selected_ob = $(evt.currentTarget.selectedOptions[0]);
                 var selected_ob_key = evt.currentTarget.value;
+
+                //determine if the key already exists, if so, highlight it instead of updating value
                 current_obs[selected_ob_key] = selected_ob.data('defaultValue');
                 this.render();
             },

@@ -171,8 +171,8 @@
             </thead>
             <% for(var ob in model.obs){  %>
             <tr>
-              <td><%= app.dictionary.ob_names[ob] || ob %></td>
-              <td><%= model.obs[ob] %></td>
+              <td><%= app.dictionary.ob_names[ob] || ob %></td> 
+              <td><input type="text" class="ob-value" data-ob-key="<%= ob %>" value="<%= model.obs[ob] %>"/></td>
             </tr>
             <% } %>
           </table>
