@@ -122,9 +122,8 @@ app.AppView = Backbone.View.extend({
                 "keyup #state-name": "onTriggerNameChange",
             },
             onObChange: function(evt) {
-                //clone the element that represents this ob
-                //add it to the table of obs
-                //provide option to delete the ob
+                this.model.getTemplateParams().model.obs[evt.currentTarget.value] = $(evt.currentTarget.selectedOptions[0]).data('defaultValue');
+                this.render();
             },
             onTriggerNameChange: function(evt) {
                 this.model.attr(".question-text", {
