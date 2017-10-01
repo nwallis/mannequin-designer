@@ -9,8 +9,17 @@
 // @import factory.js
 // @import snippet.js
 
-var app = app || {};
+var app = app || {
+    dictionary: {}
+};
 var qad = window.qad || {};
+
+app.dictionary = {
+    "ob_names": {
+        "heart_rate": "Heart rate",
+        "foot_smell": "Foot smell"
+    }
+}
 
 app.AppView = Backbone.View.extend({
 
@@ -122,7 +131,10 @@ app.AppView = Backbone.View.extend({
                 "keyup #state-name": "onTriggerNameChange",
             },
             onObChange: function(evt) {
-                this.model.getTemplateParams().model.obs[evt.currentTarget.value] = $(evt.currentTarget.selectedOptions[0]).data('defaultValue');
+                var current_obs = this.model.getTemplateParams().model.obs;
+                var selected_ob = $(evt.currentTarget.selectedOptions[0]);
+                var selected_ob_key = evt.currentTarget.value;
+                current_obs[selected_ob_key] = selected_ob.data('defaultValue');
                 this.render();
             },
             onTriggerNameChange: function(evt) {
