@@ -8,8 +8,16 @@ app.helpers = {
             "states": {}
         };
 
-        var graph_cells = graph.getCells();
+        //Get list of links for lookup when adding triggers
+        var graph_links = graph.getLinks();
+        var link_lookup = {};
 
+        for (var link_count = 0; link_count < graph_links.length; link_count++) {
+            var link = graph_links[link_count];
+            link_lookup[link.get('source').id] = link.get('target').id;
+        }
+
+        var graph_cells = graph.getCells();
         for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
             var state = graph_cells[cell_count];
             if (state.get('type') == 'qad.Question') {
@@ -22,9 +30,10 @@ app.helpers = {
                 var state_triggers = state.get('triggers');
                 for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
                     var trigger = state_triggers[trigger_count];
-                    export_data.states[state.id].triggers[trigger.id] = trigger.getTriggerParams().trigger_data;
+                    var trigger_data = trigger.getTriggerParams().trigger_data;
+                    if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
+                    export_data.states[state.id].triggers[trigger.id] = trigger_data;
                 }
-                //iterate the triggers and add them to the triggers object
 
                 var state_modifiers = state.get('options');
                 //iterate the modifiers and add them to the modifiers object
