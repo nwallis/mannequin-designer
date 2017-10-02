@@ -293,10 +293,7 @@ app.AppView = Backbone.View.extend({
                 radius: 50
             },
             validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
-                if (magnetS.getAttribute('port-group') !== magnetT.getAttribute('port-group')) {
-                    cellViewS.linkTriggerToState(cellViewT.model);
-                    return true;
-                }
+                if (magnetS.getAttribute('port-group') !== magnetT.getAttribute('port-group')) return true;
                 return false;
             },
             validateMagnet: function(cellView, magnet) {
