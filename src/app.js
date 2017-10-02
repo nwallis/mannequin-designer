@@ -185,6 +185,7 @@ app.AppView = Backbone.View.extend({
             },
             createParametersView: function(type) {
                 if (this.parameterView) this.parameterView.remove();
+                console.log(this.model);
                 this.parameterView = new window["app"]["editor"]["triggers"][this.model.getTriggerParams().type + "View"]({
                     model: this.model.getTriggerParams()
                 });
@@ -192,7 +193,7 @@ app.AppView = Backbone.View.extend({
             onTriggerTypeChange: function(evt) {
                 //When the trigger type is changed, the scenario data is overwritten with default values
                 var currentData = this.model.get('scenario_data');
-                var new_data = window["app"]["Factory"]["createTriggerType" + evt.currentTarget.value](Object.keys(currentData)[0]);
+                var new_data = window["app"]["Factory"]["createTriggerType" + evt.currentTarget.value]();
                 this.model.set('scenario_data', new_data);
 
                 //Create view for trigger type passing through details for the trigger and clean up any existing view
