@@ -13,9 +13,8 @@ app.helpers = {
         for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
             var state = graph_cells[cell_count];
             if (state.get('type') == 'qad.Question') {
-
                 export_data.states[state.id] = {
-                    "obs": {},
+                    "obs": state.getStateParams().state_data.obs,
                     "triggers": {},
                     "modifiers": {}
                 };
@@ -23,7 +22,7 @@ app.helpers = {
                 var state_triggers = state.get('triggers');
                 for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
                     var trigger = state_triggers[trigger_count];
-                    export_data.states[state.id].triggers[trigger.id] = trigger.get('trigger_data');
+                    export_data.states[state.id].triggers[trigger.id] = trigger.getTriggerParams().trigger_data;
                 }
                 //iterate the triggers and add them to the triggers object
 
