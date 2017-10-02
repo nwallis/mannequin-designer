@@ -186,7 +186,10 @@ $(function() {
 
         //refactor this to common class functions
         getTemplateParams: function() {
-            return this.get('scenario_data');
+            return {
+                model: this.get('scenario_data'),
+                model_name: this.get('attrs')[".question-text"].text
+            };
         },
 
         markup: $.trim($("#question-template").html()),
