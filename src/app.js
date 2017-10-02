@@ -130,12 +130,12 @@ app.AppView = Backbone.View.extend({
                 "keyup #state-name": "onTriggerNameChange",
             },
             onObValueChange: function(evt) {
-                var current_obs = this.model.getTemplateParams().model.obs;
+                var current_obs = this.model.getStateParams().state_data.obs;
                 var edited_ob_key = $(evt.currentTarget).data('obKey');
                 current_obs[edited_ob_key] = evt.currentTarget.value;
             },
             onObChange: function(evt) {
-                var current_obs = this.model.getTemplateParams().model.obs;
+                var current_obs = this.model.getStateParams().state_data.obs;
                 var selected_ob = $(evt.currentTarget.selectedOptions[0]);
                 var selected_ob_key = evt.currentTarget.value;
 
@@ -153,7 +153,7 @@ app.AppView = Backbone.View.extend({
                 });
             },
             render: function() {
-                this.$el.html(this.template(this.model.getTemplateParams()));
+                this.$el.html(this.template(this.model.getStateParams()));
             },
             remove: function() {
                 this.$el.empty().off();
@@ -174,26 +174,19 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             render: function() {
-                this.$el.html(this.template({
-                    model: this.model.getTriggerParams(),
-                }));
-
-                //instantiate child view if the type of trigger is set
-                if (this.model.getTriggerParams().type != '') this.createParametersView();
+                this.$el.html(this.template(this.model.getTriggerParams()));
+                if (this.model.getTriggerParams().trigger_data.type != '') this.createParametersView();
             },
             createParametersView: function(type) {
                 if (this.parameterView) this.parameterView.remove();
-                this.parameterView = new window["app"]["editor"]["triggers"][this.model.getTriggerParams().type + "View"]({
+                this.parameterView = new window["app"]["editor"]["triggers"][this.model.getTriggerParams().trigger_data.type + "View"]({
                     model: this.model.getTriggerParams()
                 });
             },
             onTriggerTypeChange: function(evt) {
-                //When the trigger type is changed, the scenario data is overwritten with default values
-                var currentData = this.model.get('scenario_data');
-                var new_data = window["app"]["Factory"]["createTriggerType" + evt.currentTarget.value](Object.keys(currentData)[0]);
-                this.model.set('scenario_data', new_data);
-
-                //Create view for trigger type passing through details for the trigger and clean up any existing view
+                //var currentData = this.model.get('scenario_data');
+                var new_data = window["app"]["Factory"]["createTriggerType" + evt.currentTarget.value]();
+                this.model.set('trigger_data', new_data);
                 this.createParametersView();
             },
             onTriggerNameChange: function(evt) {
@@ -208,16 +201,13 @@ app.AppView = Backbone.View.extend({
             }
         });
 
-        app.editor.EditableElementView = Backbone.View.extend({
+        app.editor.EditableTriggerView = Backbone.View.extend({
             storeChangedValue: function(evt) {
-                this.model.params[evt.currentTarget.id] = evt.currentTarget.value;
+                this.model.trigger_data.params[evt.currentTarget.id] = evt.currentTarget.value;
             },
         });
 
-        //convention over configuration
-        //all ids in json must match the ids of the elements responsible for gathering data
-
-        app.editor.triggers.TimeLimitView = app.editor.EditableElementView.extend({
+        app.editor.triggers.TimeLimitView = app.editor.EditableTriggerView.extend({
             el: "#trigger-parameters",
             events: {
                 "keyup #time_limit": "storeChangedValue",
@@ -227,9 +217,7 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             render: function() {
-                this.$el.html(this.template({
-                    model: this.model
-                }));
+                this.$el.html(this.template(this.model));
             },
             remove: function() {
                 this.$el.empty().off();
@@ -238,7 +226,7 @@ app.AppView = Backbone.View.extend({
             }
         });
 
-        app.editor.triggers.GiveDrugView = app.editor.EditableElementView.extend({
+        app.editor.triggers.GiveDrugView = app.editor.EditableTriggerView.extend({
             el: "#trigger-parameters",
             events: {
                 "change #drug": "storeChangedValue",
@@ -251,9 +239,7 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             render: function() {
-                this.$el.html(this.template({
-                    model: this.model
-                }));
+                this.$el.html(this.template(this.model));
             },
             remove: function() {
                 this.$el.empty().off();

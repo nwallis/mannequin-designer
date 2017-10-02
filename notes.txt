@@ -2,9 +2,9 @@
 // 
 // document new views and document convention to follow
 // 
+// create unique ids for all elements rather than attempting to use a sanitised version of the plan english name
+// export to mannequin JSON schema
 // create modifier view
 // provide option on state to define it as the starting state
 // move into phoenix
 // save scenario to server
-// export to mannequin JSON schema
-

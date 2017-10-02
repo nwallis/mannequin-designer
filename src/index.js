@@ -26,9 +26,11 @@ $(function() {
     }, {
         markup: $.trim($("#trigger-template").html()),
         getTriggerParams: function() {
-            var currentData = this.get('scenario_data');
-            return currentData[Object.keys(currentData)[0]]
-        },
+            return {
+                trigger_data: this.get('trigger_data'),
+                model_name: this.get('attrs')['.trigger-text'].text
+            }
+        }
     });
 
     joint.dia.Element.define('qad.Modifier', {
@@ -186,12 +188,10 @@ $(function() {
     }, {
 
         //refactor this to common class functions
-        getTemplateParams: function() {
-            var currentData = this.get('scenario_data');
-            var key_name = Object.keys(currentData)[0];
+        getStateParams: function() {
             return {
-                model: currentData[key_name],
-                key_name: key_name
+                state_data: this.get('scenario_data'),
+                model_name: this.get('attrs')[".question-text"].text
             };
         },
 

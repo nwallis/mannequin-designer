@@ -2,34 +2,30 @@ var app = app || {};
 
 app.Factory = {
 
-    createStateFromParams: function(name, params) {
-        if (name == undefined || name == '') throw new Error("State name cannot be empty");
-        var state = {};
-        state[name] = {
+    createStateFromParams: function(params) {
+        var state = {
             obs: {}
         }
         return state;
     },
 
-    createTriggerFromParams: function(name, type, params) {
-        if (name == undefined || name == '') throw new Error("Trigger name cannot be empty");
-        var trigger = {};
-        trigger[name] = {
+    createTriggerFromParams: function(type, params) {
+        var trigger = {
             type: type || '',
             params: params || {}
         }
         return trigger;
     },
 
-    createTriggerTypeTimeLimit: function(name, time_limit, linked_state) {
-        return this.createTriggerFromParams(name, "TimeLimit", {
+    createTriggerTypeTimeLimit: function(time_limit, linked_state) {
+        return this.createTriggerFromParams("TimeLimit", {
             "time_limit": time_limit || 10,
             "linked_state": linked_state || ''
         });
     },
 
-    createTriggerTypeGiveDrug: function(name, comparison, drug, dose, dose_unit, linked_state) {
-        return this.createTriggerFromParams(name, "GiveDrug", {
+    createTriggerTypeGiveDrug: function(comparison, drug, dose, dose_unit, linked_state) {
+        return this.createTriggerFromParams("GiveDrug", {
             "comparison": comparison || '',
             "drug": drug || '',
             "dose": dose || 0,
@@ -66,8 +62,7 @@ app.Factory = {
                     args: {},
                 }]
             },
-            scenario_data: app.Factory.createTriggerFromParams(name)
-
+            trigger_data: app.Factory.createTriggerFromParams()
         });
         return q;
     },
