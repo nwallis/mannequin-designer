@@ -4,7 +4,8 @@ app.Factory = {
 
     createStateFromParams: function(params) {
         var state = {
-            obs: {}
+            obs: {},
+            initial_state: false
         }
         return state;
     },

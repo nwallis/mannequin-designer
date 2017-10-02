@@ -129,6 +129,16 @@ app.AppView = Backbone.View.extend({
                 "keyup .ob-value": "onObValueChange",
                 "change #ob-select": "onObChange",
                 "keyup #state-name": "onTriggerNameChange",
+                "click #initial-state-check": "onInitialStateClicked",
+            },
+            onInitialStateClicked: function(evt) {
+                var checkbox_selected = $(evt.currentTarget).is(':checked');
+                if (checkbox_selected) {
+                    //falsify initial state from all other element models
+                    //truthy initial in this model
+                } else {
+                    //falsify initial state in this model
+                }
             },
             onObValueChange: function(evt) {
                 var current_obs = this.model.getStateParams().state_data.obs;
