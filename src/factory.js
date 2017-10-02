@@ -96,7 +96,7 @@ app.Factory = {
             }],
             options: [],
             triggers: [],
-            scenario_data: app.Factory.createStateFromParams(text)
+            state_data: app.Factory.createStateFromParams(text)
         });
         return q;
     },

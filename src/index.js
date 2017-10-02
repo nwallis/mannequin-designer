@@ -190,7 +190,7 @@ $(function() {
         //refactor this to common class functions
         getStateParams: function() {
             return {
-                state_data: this.get('scenario_data'),
+                state_data: this.get('state_data'),
                 model_name: this.get('attrs')[".question-text"].text
             };
         },

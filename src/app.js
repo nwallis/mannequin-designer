@@ -9,9 +9,7 @@
 // @import factory.js
 // @import snippet.js
 
-var app = app || {
-    dictionary: {}
-};
+var app = app || {};
 var qad = window.qad || {};
 
 app.dictionary = {
@@ -28,6 +26,7 @@ app.AppView = Backbone.View.extend({
 
     events: {
         'click #add-state': 'addState',
+        'click #save-scenario': 'saveScenario',
     },
 
     initialize: function() {
@@ -336,6 +335,10 @@ app.AppView = Backbone.View.extend({
         var q = app.Factory.createQuestion('Question');
         this.graph.addCell(q);
         this.status('Question added.');
+    },
+
+    saveScenario: function() {
+        console.log(app.helpers.export_to_scenario_json(this.graph));
     },
 
     clear: function() {
