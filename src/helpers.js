@@ -19,6 +19,7 @@ app.helpers = {
 
         var graph_cells = graph.getCells();
         for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
+
             var state = graph_cells[cell_count];
             if (state.get('type') == 'qad.Question') {
                 export_data.states[state.id] = {
