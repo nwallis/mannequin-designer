@@ -26,7 +26,10 @@ $(function() {
     }, {
         markup: $.trim($("#trigger-template").html()),
         getTriggerParams: function() {
-            return this.get('scenario_data');
+            return {
+                model: this.get('scenario_data'),
+                model_name: this.get('attrs')['.trigger-text'].text
+            }
         }
     });
 

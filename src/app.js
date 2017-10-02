@@ -176,17 +176,15 @@ app.AppView = Backbone.View.extend({
                 this.render();
             },
             render: function() {
-                this.$el.html(this.template({
-                    model: this.model.getTriggerParams(),
-                }));
+                this.$el.html(this.template(this.model.getTriggerParams()));
 
                 //instantiate child view if the type of trigger is set
-                if (this.model.getTriggerParams().type != '') this.createParametersView();
+                if (this.model.getTriggerParams().model.type != '') this.createParametersView();
             },
             createParametersView: function(type) {
                 if (this.parameterView) this.parameterView.remove();
                 console.log(this.model);
-                this.parameterView = new window["app"]["editor"]["triggers"][this.model.getTriggerParams().type + "View"]({
+                this.parameterView = new window["app"]["editor"]["triggers"][this.model.getTriggerParams().model.type + "View"]({
                     model: this.model.getTriggerParams()
                 });
             },
