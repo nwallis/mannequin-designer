@@ -62,8 +62,7 @@ app.Factory = {
                     args: {},
                 }]
             },
-            scenario_data: app.Factory.createTriggerFromParams()
-
+            trigger_data: app.Factory.createTriggerFromParams()
         });
         return q;
     },

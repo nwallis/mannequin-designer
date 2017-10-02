@@ -27,7 +27,7 @@ $(function() {
         markup: $.trim($("#trigger-template").html()),
         getTriggerParams: function() {
             return {
-                model: this.get('scenario_data'),
+                trigger_data: this.get('trigger_data'),
                 model_name: this.get('attrs')['.trigger-text'].text
             }
         }
@@ -188,9 +188,9 @@ $(function() {
     }, {
 
         //refactor this to common class functions
-        getTemplateParams: function() {
+        getStateParams: function() {
             return {
-                model: this.get('scenario_data'),
+                state_data: this.get('scenario_data'),
                 model_name: this.get('attrs')[".question-text"].text
             };
         },

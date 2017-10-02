@@ -99,7 +99,7 @@
 
     <script type="text/template" id="trigger-type-time-limit-template">
       <label for="time_limit">Duration</label>
-      <input type="text" id="time_limit" value="<%= model.params.time_limit %>">
+      <input type="text" id="time_limit" value="<%= trigger_data.params.time_limit %>">
     </script>
 
     <script type="text/template" id="trigger-type-give-drug-template">
@@ -108,16 +108,16 @@
           <label for="comparison">Comparison</label>
           <select id="comparison">
             <option value="">Please select...</option>
-            <option value="at_least" <%= (model.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
-            <option value="no_more_than" <%= (model.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
-            <option value="exactly" <%= (model.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
+            <option value="at_least" <%= (trigger_data.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
+            <option value="no_more_than" <%= (trigger_data.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
+            <option value="exactly" <%= (trigger_data.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
           </select>
         </div>
       </div>
       <div class="row">
         <div class="col">
           <label for="dose">Dose</label>
-          <input type="text" id="dose" placholder="Enter a value" value="<%= model.params.dose %>">
+          <input type="text" id="dose" placholder="Enter a value" value="<%= trigger_data.params.dose %>">
         </div>
       </div>
       <div class="row">
@@ -125,8 +125,8 @@
           <label for="dose_unit">Unit</label>
           <select id="dose_unit">
             <option value="">Please select...</option>
-            <option value="mg" <%= (model.params.dose_unit == 'mg') ? "selected" : "" %>>mg</option>
-            <option value="kg" <%= (model.params.dose_unit == 'kg') ? "selected" : "" %>>kg</option>
+            <option value="mg" <%= (trigger_data.params.dose_unit == 'mg') ? "selected" : "" %>>mg</option>
+            <option value="kg" <%= (trigger_data.params.dose_unit == 'kg') ? "selected" : "" %>>kg</option>
           </select>
         </div>
       </div>
@@ -135,8 +135,8 @@
           <label for="drug">Drug name</label>
           <select id="drug" name="">
             <option value="">Please select...</option>
-            <option value="panadol" <%= (model.params.drug == 'panadol') ? "selected" : "" %>>Panadol</option>
-            <option value="neurophen" <%= (model.params.drug == 'neurophen') ? "selected" : "" %>>Neurophen</option>
+            <option value="panadol" <%= (trigger_data.params.drug == 'panadol') ? "selected" : "" %>>Panadol</option>
+            <option value="neurophen" <%= (trigger_data.params.drug == 'neurophen') ? "selected" : "" %>>Neurophen</option>
           </select>
         </div>
       </div>
@@ -169,10 +169,10 @@
                 <td>Value</td>
               </tr>
             </thead>
-            <% for(var ob in model.obs){  %>
+            <% for(var ob in state_data.obs){  %>
             <tr>
               <td><%= app.dictionary.ob_names[ob] || ob %></td> 
-              <td><input type="text" id="ob-value-<%= ob %>" class="ob-value" data-ob-key="<%= ob %>" value="<%= model.obs[ob] %>"/></td>
+              <td><input type="text" id="ob-value-<%= ob %>" class="ob-value" data-ob-key="<%= ob %>" value="<%= state_data.obs[ob] %>"/></td>
             </tr>
             <% } %>
           </table>
@@ -192,8 +192,8 @@
           <label for="trigger-type">Trigger type</label>
           <select id="trigger-type" name="">
             <option value="">Please select..</option>
-            <option value="GiveDrug" <%= (model.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
-            <option value="TimeLimit" <%= (model.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
+            <option value="GiveDrug" <%= (trigger_data.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
+            <option value="TimeLimit" <%= (trigger_data.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
           </select>
         </div>
       </div>
