@@ -11,13 +11,29 @@ app.helpers = {
         var graph_cells = graph.getCells();
 
         for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
-            var cell = graph_cells[cell_count];
-            if (cell.get('type') == 'qad.Question') {
+            var state = graph_cells[cell_count];
+            if (state.get('type') == 'qad.Question') {
 
-                //check that the name of the state hasn't been used already - handle this when state names are edited, but also do it here
+                export_data.states[state.id] = {
+                    "obs": {},
+                    "triggers": {},
+                    "modifiers": {}
+                };
 
-                //based on the questions name, add it to the export_data object
+                var state_triggers = state.get('triggers');
+                for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
+                    var trigger = state_triggers[trigger_count];
+                    export_data.states[state.id].triggers[trigger.id] = trigger.get('trigger_data');
+                }
+                //iterate the triggers and add them to the triggers object
+
+                var state_modifiers = state.get('options');
+                //iterate the modifiers and add them to the modifiers object
+
             }
         }
+
+        console.log(export_data);
+
     }
 }
