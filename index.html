@@ -45,7 +45,7 @@
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
-              <ul class="navbar-nav ml-auto">
+              <ul class="navbar-nav">
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Scenario</a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -154,6 +154,12 @@
         <div class="col">
           <label for="state-name">State name</label>
           <input type="text" id="state-name" value="<%= model_name %>"/>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="initial-state-check ">Initial state?</label>
+          <input type="checkbox" id="initial-state-check" />
         </div>
       </div>
       <div class="row">

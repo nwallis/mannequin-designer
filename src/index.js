@@ -194,9 +194,69 @@ $(function() {
                 model_name: this.get('attrs')[".question-text"].text
             };
         },
+        disableInitialState: function() {
+            var state_data = JSON.parse(JSON.stringify(this.get('state_data')));
+            state_data.initial_state = false;
+            this.attr('.body', {
+                width: 150,
+                height: 250,
+                rx: '1%',
+                ry: '2%',
+                stroke: 'none',
+                fill: {
+                    type: 'linearGradient',
+                    stops: [{
+                        offset: '0%',
+                        color: '#FEB663'
+                    }, {
+                        offset: '100%',
+                        color: '#31D0C6'
+                    }],
+                    // Top-to-bottom gradient.
+                    attrs: {
+                        x1: '0%',
+                        y1: '0%',
+                        x2: '0%',
+                        y2: '100%'
+                    }
+                }
+            });
+            this.set('state_data', state_data);
+        },
+        enableInitialState: function() {
+            var state_data = JSON.parse(JSON.stringify(this.get('state_data')));
+            state_data.initial_state = true;
+            this.attr('.body', {
+                width: 150,
+                height: 250,
+                rx: '1%',
+                ry: '2%',
+                stroke: 'none',
+                fill: {
+                    type: 'linearGradient',
+                    stops: [{
+                        offset: '0%',
+                        color: '#000000'
+                    }, {
+                        offset: '100%',
+                        color: '#31D0C6'
+                    }],
+                    // Top-to-bottom gradient.
+                    attrs: {
+                        x1: '0%',
+                        y1: '0%',
+                        x2: '0%',
+                        y2: '100%'
+                    }
+                }
+            });
+            this.set('state_data', state_data);
+        },
 
         markup: $.trim($("#question-template").html()),
+
         optionMarkup: $.trim($("#modifier-template").html()),
+
         triggerMarkup: $.trim($("#trigger-template").html()),
 
         initialize: function() {
