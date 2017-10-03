@@ -10,6 +10,24 @@ app.Factory = {
         return state;
     },
 
+    createModifierFromParams: function(type, params) {
+        var modifier = {
+            type: type || '',
+            params: params || {}
+        }
+        return modifier;
+    },
+
+    createModifierTypeOb: function(time_limit, transition_type, start_time, end_time, relative_amount) {
+        return this.createModifierFromParams("Ob", {
+            "time_limit": time_limit || 10,
+            "transition_type": transition_type || "linear",
+            "start_time": start_time || 0,
+            "end_time": end_time || 10,
+            "relative_amount": relative_amount || 0,
+        });
+    },
+
     createTriggerFromParams: function(type, params) {
         var trigger = {
             type: type || '',
@@ -75,7 +93,8 @@ app.Factory = {
                 '.option-text': {
                     text: name
                 }
-            }
+            },
+            modifier_data: app.Factory.createModifierFromParams()
         });
         return q;
     },

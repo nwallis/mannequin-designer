@@ -56,6 +56,12 @@ $(function() {
         }
     }, {
         markup: $.trim($("#modifier-template").html()),
+        getModifierParams: function() {
+            return {
+                modifier_data: this.get('modifier_data'),
+                model_name: this.get('attrs')['.option-text'].text
+            }
+        }
     });
 
     joint.dia.Element.define('qad.Question', {
