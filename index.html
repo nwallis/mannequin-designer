@@ -172,19 +172,21 @@
         </div>
         <div class="row">
           <div class="col">
-            <table>
-              <thead>
+            <table class="table" >
+              <thead class="thead-inverse">
                 <tr>
-                  <td>Ob</td>
-                  <td>Value</td>
+                  <th>Ob</th>
+                  <th>Value</th>
                 </tr>
               </thead>
-              <% for(var ob in state_data.obs){  %>
-              <tr>
-                <td><%= app.dictionary.ob_names[ob] || ob %></td> 
-                <td><input type="text" id="ob-value-<%= ob %>" class="ob-value" data-ob-key="<%= ob %>" value="<%= state_data.obs[ob] %>"/></td>
-              </tr>
-              <% } %>
+              <tbody>
+                <% for(var ob in state_data.obs){  %>
+                <tr>
+                  <td><%= app.dictionary.ob_names[ob] || ob %></td> 
+                  <td><input type="text" id="ob-value-<%= ob %>" class="ob-value" data-ob-key="<%= ob %>" value="<%= state_data.obs[ob] %>"/></td>
+                </tr>
+                <% } %>
+              </tbody>
             </table>
           </div>
         </div>
