@@ -150,47 +150,45 @@
     </script>
 
     <script type="text/template" id="state-parameters-template">
-      <div class="row">
-        <div class="col">
+      <form>
+        <div class="form-group">
           <label for="state-name">State name</label>
-          <input type="text" id="state-name" value="<%= model_name %>"/>
+          <input class="form-control" type="text" id="state-name" value="<%= model_name %>"/>
         </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="initial-state-check ">Initial state?</label>
-          <input type="checkbox" id="initial-state-check" />
+        <div class="form-group">
+          <label class="form-check-label" for="initial-state-check ">
+            <input type="checkbox" id="initial-state-check" class="form-check-input"/>
+            Initial state?
+          </label>
         </div>
-      </div>
-      <div class="row">
-        <div class="col">
+        <div class="form-group">
           <label for="ob-select">Add ob</label>
-          <select id="ob-select" name="">
+          <select id="ob-select" name="" class="form-control">
             <option value="">Please select...</option>
             <option value="heart_rate" data-default-value="0">Heart rate</option>
             <option value="foot_smell" data-default-value="10">Foot smell</option>
             <option value="hair_loss" data-default-value="22">Hair loss</option>
           </select>
         </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <table>
-            <thead>
+        <div class="row">
+          <div class="col">
+            <table>
+              <thead>
+                <tr>
+                  <td>Ob</td>
+                  <td>Value</td>
+                </tr>
+              </thead>
+              <% for(var ob in state_data.obs){  %>
               <tr>
-                <td>Ob</td>
-                <td>Value</td>
+                <td><%= app.dictionary.ob_names[ob] || ob %></td> 
+                <td><input type="text" id="ob-value-<%= ob %>" class="ob-value" data-ob-key="<%= ob %>" value="<%= state_data.obs[ob] %>"/></td>
               </tr>
-            </thead>
-            <% for(var ob in state_data.obs){  %>
-            <tr>
-              <td><%= app.dictionary.ob_names[ob] || ob %></td> 
-              <td><input type="text" id="ob-value-<%= ob %>" class="ob-value" data-ob-key="<%= ob %>" value="<%= state_data.obs[ob] %>"/></td>
-            </tr>
-            <% } %>
-          </table>
+              <% } %>
+            </table>
+          </div>
         </div>
-      </div>
+      </form>
     </script>
 
     <script type="text/template" id="trigger-type-template">
