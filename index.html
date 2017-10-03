@@ -235,29 +235,30 @@
     <script type="text/template" id="modifier-type-ob-template"> 
       <div class="row">
         <div class="col">
-          <label for="transition-type">Transition type</label>
-          <select id="transition-type">
+          <label for="transition_type">Transition type</label>
+          <select id="transition_type" class="select-value-change">
             <option value="">Please select...</option>
             <option value="linear" <%= (modifier_data.params.transition_type == 'linear') ? "selected" : "" %> >Linear</option>
+            <option value="exponential" <%= (modifier_data.params.transition_type == 'exponential') ? "selected" : "" %> >Exponential</option>
           </select>
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <label for="start-time">Start time</label>
-          <input type="text" id="start-time" placholder="Enter a value" value="<%= modifier_data.params.start_time %>">
+          <label for="start_time">Start time</label>
+          <input type="text" id="start_time" class="keypress-value-change" placholder="Enter a value" value="<%= modifier_data.params.start_time %>">
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <label for="end-time">End time</label>
-          <input type="text" id="end-time" placholder="Enter a value" value="<%= modifier_data.params.end_time %>">
+          <label for="end_time">End time</label>
+          <input type="text" id="end_time" class="keypress-value-change" placholder="Enter a value" value="<%= modifier_data.params.end_time %>">
         </div>
       </div>
       <div class="row">
         <div class="col">
           <label for="relative-amount">Amount</label>
-          <input type="text" id="relative-amount" placholder="Enter a value" value="<%= modifier_data.params.relative_amount %>">
+          <input type="text" id="relative_amount" class="keypress-value-change" placholder="Enter a value" value="<%= modifier_data.params.relative_amount %>">
         </div>
       </div>
     </script>

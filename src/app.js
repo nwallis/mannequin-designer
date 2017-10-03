@@ -213,7 +213,10 @@ app.AppView = Backbone.View.extend({
 
         app.editor.modifiers.ObView = app.editor.EditableModifierView.extend({
             el: "#modifier-parameters",
-            events: {},
+            events: {
+                "change .select-value-change": "storeChangedValue",
+                "keyup .keypress-value-change": "storeChangedValue",
+            },
             initialize: function() {
                 this.template = _.template($('#modifier-type-ob-template').html());
                 this.render();
