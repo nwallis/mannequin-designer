@@ -44,5 +44,18 @@ app.helpers = {
 
         console.log(export_data);
 
+    },
+
+    get_states: function(graph) {
+        var state_cells = [];
+        var graph_cells = graph.getCells();
+        for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
+            var state = graph_cells[cell_count];
+            if (state.get('type') == 'qad.Question') {
+                state_cells.push(state);
+            }
+
+        }
+        return state_cells;
     }
 }
