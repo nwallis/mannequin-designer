@@ -27,6 +27,9 @@ app.helpers = {
                 "modifiers": {}
             };
 
+            //Store the id of the starting state
+            if (state.getStateParams().state_data.initial_state) export_data.starting_state = state.id;
+
             var state_triggers = state.get('triggers');
             for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
                 var trigger = state_triggers[trigger_count];
@@ -39,6 +42,8 @@ app.helpers = {
             //iterate the modifiers and add them to the modifiers object
 
         }
+
+        console.log(export_data);
 
     },
 
