@@ -116,7 +116,8 @@ app.AppView = Backbone.View.extend({
 
         /* my editor view */
         app.editor = {
-            triggers: {}
+            triggers: {},
+            modifiers: {},
         };
 
         app.editor.StateView = Backbone.View.extend({
@@ -172,7 +173,59 @@ app.AppView = Backbone.View.extend({
         });
 
         app.editor.ModifierView = Backbone.View.extend({
-            el: "#element-type"
+            el: "#element-type",
+            events: {
+                "change #modifier-type": "onModifierTypeChange",
+            },
+            onModifierTypeChange: function(evt) {
+                if (evt.currentTarget.value != '') {
+                    var new_data = window["app"]["Factory"]["createModifierType" + evt.currentTarget.value]();
+                    this.model.set('modifier_data', new_data);
+                    this.createParametersView();
+                }
+            },
+            createParametersView: function(type) {
+                if (this.parameterView) this.parameterView.remove();
+                this.parameterView = new window["app"]["editor"]["modifiers"][this.model.getModifierParams().modifier_data.type + "View"]({
+                    model: this.model.getModifierParams()
+                });
+            },
+            initialize: function() {
+                this.template = _.template($('#modifier-type-template').html());
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template(this.model.getModifierParams()));
+                if (this.model.getModifierParams().modifier_data.type != '') this.createParametersView();
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+        app.editor.EditableModifierView = Backbone.View.extend({
+            storeChangedValue: function(evt) {
+                this.model.modifier_data.params[evt.currentTarget.id] = evt.currentTarget.value;
+            },
+        });
+
+        app.editor.modifiers.ObView = app.editor.EditableModifierView.extend({
+            el: "#modifier-parameters",
+            events: {},
+            initialize: function() {
+                this.template = _.template($('#modifier-type-ob-template').html());
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template(this.model));
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
         });
 
         app.editor.TriggerView = Backbone.View.extend({
@@ -197,10 +250,11 @@ app.AppView = Backbone.View.extend({
                 });
             },
             onTriggerTypeChange: function(evt) {
-                //var currentData = this.model.get('scenario_data');
-                var new_data = window["app"]["Factory"]["createTriggerType" + evt.currentTarget.value]();
-                this.model.set('trigger_data', new_data);
-                this.createParametersView();
+                if (evt.currentTarget.value != '') {
+                    var new_data = window["app"]["Factory"]["createTriggerType" + evt.currentTarget.value]();
+                    this.model.set('trigger_data', new_data);
+                    this.createParametersView();
+                }
             },
             onTriggerNameChange: function(evt) {
                 this.model.attr(".trigger-text", {
@@ -213,6 +267,7 @@ app.AppView = Backbone.View.extend({
                 return this;
             }
         });
+
 
         //Trigger classes
         app.editor.EditableTriggerView = Backbone.View.extend({
@@ -277,6 +332,9 @@ app.AppView = Backbone.View.extend({
                     break;
                 case 'qad.Question':
                     view_type_class = app.editor.StateView;
+                    break;
+                case 'qad.Modifier':
+                    view_type_class = app.editor.ModifierView;
             }
 
             if (view_type_class) {

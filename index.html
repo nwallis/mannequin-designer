@@ -216,21 +216,50 @@
     <script type="text/template" id="modifier-type-template">
       <div class="row">
         <div class="col">
-          <label for="trigger-name">Modifier name</label>
+          <label for="modifier-name">Modifier name</label>
           <input type="text" id="modifier-name" value="<%= model_name  %>" />
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <label for="trigger-type">Trigger type</label>
-          <select id="trigger-type" name="">
+          <label for="modifier-type">Modifier type</label>
+          <select id="modifier-type" name="">
             <option value="">Please select..</option>
-            <option value="GiveDrug" <%= (trigger_data.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
-            <option value="TimeLimit" <%= (trigger_data.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
+            <option value="Ob" <%= (modifier_data.type == 'Ob') ? "selected" : "" %>>Ob</option>
           </select>
         </div>
       </div>
-      <div id="trigger-parameters"></div>
+      <div id="modifier-parameters"></div>
+    </script>
+
+    <script type="text/template" id="modifier-type-ob-template"> 
+      <div class="row">
+        <div class="col">
+          <label for="transition-type">Transition type</label>
+          <select id="transition-type">
+            <option value="">Please select...</option>
+            <option value="linear" <%= (modifier_data.params.transition_type == 'linear') ? "selected" : "" %> >Linear</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="start-time">Start time</label>
+          <input type="text" id="start-time" placholder="Enter a value" value="<%= modifier_data.params.start_time %>">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="end-time">End time</label>
+          <input type="text" id="end-time" placholder="Enter a value" value="<%= modifier_data.params.end_time %>">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="relative-amount">Amount</label>
+          <input type="text" id="relative-amount" placholder="Enter a value" value="<%= modifier_data.params.relative_amount %>">
+        </div>
+      </div>
     </script>
 
   </body>
