@@ -39,7 +39,11 @@ app.helpers = {
             }
 
             var state_modifiers = state.get('options');
-            //iterate the modifiers and add them to the modifiers object
+            for (var modifier_count = 0; modifier_count < state_modifiers.length; modifier_count++) {
+                var modifier = state_modifiers[modifier_count];
+                var modifier_data = modifier.getModifierParams().modifier_data;
+                export_data.states[state.id].modifiers[modifier.id] = modifier_data;
+            }
 
         }
 
