@@ -194,7 +194,16 @@ $(function() {
                 model_name: this.get('attrs')[".question-text"].text
             };
         },
-
+        disableInitialState: function() {
+            var state_data = JSON.parse(JSON.stringify(this.get('state_data')));
+            state_data.initial_state = false;
+            this.set('state_data', state_data);
+        },
+        enableInitialState: function() {
+            var state_data = JSON.parse(JSON.stringify(this.get('state_data')));
+            state_data.initial_state = true;
+            this.set('state_data', state_data);
+        },
         markup: $.trim($("#question-template").html()),
         optionMarkup: $.trim($("#modifier-template").html()),
         triggerMarkup: $.trim($("#trigger-template").html()),

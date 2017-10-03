@@ -132,13 +132,11 @@ app.AppView = Backbone.View.extend({
                 "click #initial-state-check": "onInitialStateClicked",
             },
             onInitialStateClicked: function(evt) {
-                var state_data = JSON.parse(JSON.stringify(this.model.get('state_data')));
-                //falsify initial state from all other element models
-
-                console.log(this.model.graph.getCells());
-
-                state_data.initial_state = $(evt.currentTarget).is(':checked');
-                this.model.set('state_data', state_data);
+                state_cells = app.helpers.get_states(this.model.graph);
+                state_cells.forEach(function(state) {
+                    state.disableInitialState();
+                });
+                if ($(evt.currentTarget).is(':checked')) this.model.enableInitialState();
             },
             onObValueChange: function(evt) {
                 var current_obs = this.model.getStateParams().state_data.obs;

@@ -17,32 +17,28 @@ app.helpers = {
             link_lookup[link.get('source').id] = link.get('target').id;
         }
 
-        var graph_cells = graph.getCells();
-        for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
+        var state_cells = app.helpers.get_states(graph);
+        for (var state_count = 0; state_count < state_cells.length; state_count++) {
 
-            var state = graph_cells[cell_count];
-            if (state.get('type') == 'qad.Question') {
-                export_data.states[state.id] = {
-                    "obs": state.getStateParams().state_data.obs,
-                    "triggers": {},
-                    "modifiers": {}
-                };
+            var state = state_cells[state_count];
+            export_data.states[state.id] = {
+                "obs": state.getStateParams().state_data.obs,
+                "triggers": {},
+                "modifiers": {}
+            };
 
-                var state_triggers = state.get('triggers');
-                for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
-                    var trigger = state_triggers[trigger_count];
-                    var trigger_data = trigger.getTriggerParams().trigger_data;
-                    if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
-                    export_data.states[state.id].triggers[trigger.id] = trigger_data;
-                }
-
-                var state_modifiers = state.get('options');
-                //iterate the modifiers and add them to the modifiers object
-
+            var state_triggers = state.get('triggers');
+            for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
+                var trigger = state_triggers[trigger_count];
+                var trigger_data = trigger.getTriggerParams().trigger_data;
+                if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
+                export_data.states[state.id].triggers[trigger.id] = trigger_data;
             }
-        }
 
-        console.log(export_data);
+            var state_modifiers = state.get('options');
+            //iterate the modifiers and add them to the modifiers object
+
+        }
 
     },
 
