@@ -171,6 +171,10 @@ app.AppView = Backbone.View.extend({
             }
         });
 
+        app.editor.ModifierView = Backbone.View.extend({
+            el: "#element-type"
+        });
+
         app.editor.TriggerView = Backbone.View.extend({
             el: "#element-type",
             events: {
@@ -210,6 +214,7 @@ app.AppView = Backbone.View.extend({
             }
         });
 
+        //Trigger classes
         app.editor.EditableTriggerView = Backbone.View.extend({
             storeChangedValue: function(evt) {
                 this.model.trigger_data.params[evt.currentTarget.id] = evt.currentTarget.value;

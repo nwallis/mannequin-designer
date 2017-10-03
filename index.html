@@ -213,5 +213,25 @@
       <div id="trigger-parameters"></div>
     </script>
 
+    <script type="text/template" id="modifier-type-template">
+      <div class="row">
+        <div class="col">
+          <label for="trigger-name">Modifier name</label>
+          <input type="text" id="modifier-name" value="<%= model_name  %>" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="trigger-type">Trigger type</label>
+          <select id="trigger-type" name="">
+            <option value="">Please select..</option>
+            <option value="GiveDrug" <%= (trigger_data.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
+            <option value="TimeLimit" <%= (trigger_data.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
+          </select>
+        </div>
+      </div>
+      <div id="trigger-parameters"></div>
+    </script>
+
   </body>
 </html>
