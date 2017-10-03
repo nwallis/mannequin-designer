@@ -107,11 +107,6 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     initialize: function() {
         joint.dia.ElementView.prototype.initialize.apply(this, arguments);
         this.listenTo(this.model, 'change:embeds', this.layoutChildren, this);
-        this.listenTo(this.model, 'change:state_data', this.stateDataChanged, this);
-    },
-
-    stateDataChanged: function() {
-        //visually indicate that this state is the starting state 
     },
 
     layoutChildren: function() {
