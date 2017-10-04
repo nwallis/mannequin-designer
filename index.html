@@ -235,6 +235,17 @@
     <script type="text/template" id="modifier-type-ob-template"> 
       <div class="row">
         <div class="col">
+          <label for="transition_type">Ob to modify</label>
+          <select id="ob_property" class="select-value-change">
+            <option value="">Please select...</option>
+            <option value="heart_rate" <%= (modifier_data.params.transition_type == 'heart_rate') ? "selected" : "" %> >Heart rate</option>
+            <option value="foot_smell" <%= (modifier_data.params.transition_type == 'foot_smell') ? "selected" : "" %> >Foot smell</option>
+            <option value="hair_loss" <%= (modifier_data.params.transition_type == 'hair_loss') ? "selected" : "" %> >Hair loss</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
           <label for="transition_type">Transition type</label>
           <select id="transition_type" class="select-value-change">
             <option value="">Please select...</option>
