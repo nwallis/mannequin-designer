@@ -113,7 +113,6 @@
   require.brunch = true;
   globals.require = require;
 })();
-require.register("rappid.min.js", function(exports, require, module) {
 /*! Rappid v2.1.0 - HTML5 Diagramming Framework - TRIAL VERSION
 
 Copyright (c) 2015 client IO
@@ -19056,10 +19055,416 @@ file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
 
 }));
 
+/*! Rappid v2.1.0 - HTML5 Diagramming Framework - TRIAL VERSION
+
+Copyright (c) 2015 client IO
+
+ 2017-09-14 
+
+
+This Source Code Form is subject to the terms of the Rappid Trial License
+, v. 2.0. If a copy of the Rappid License was not distributed with this
+file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
+ or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
+
+
+joint.shapes.qad = {};
+
+joint.util.measureText = function(text, attrs) {
+
+    var fontSize = parseInt(attrs.fontSize, 10) || 10;
+
+    var svgDocument = V('svg').node;
+    var textElement = V('<text><tspan></tspan></text>').node;
+    var textSpan = textElement.firstChild;
+    var textNode = document.createTextNode('');
+
+    textSpan.appendChild(textNode);
+    svgDocument.appendChild(textElement);
+    document.body.appendChild(svgDocument);
+
+    var lines = text.split('\n');
+    var width = 0;
+
+    // Find the longest line width.
+    _.each(lines, function(line) {
+
+        textNode.data = line;
+        var lineWidth = textSpan.getComputedTextLength();
+
+        width = Math.max(width, lineWidth);
+    });
+
+    var height = lines.length * (fontSize * 1.2);
+
+    V(svgDocument).remove();
+
+    return {
+        width: width,
+        height: height
+    };
+};
+
+joint.shapes.qad.TriggerView = joint.dia.ElementView.extend({
+    events: {
+        'click .btn-remove-trigger': 'onRemoveTrigger',
+    },
+    initialize: function(e) {
+        joint.dia.ElementView.prototype.initialize.apply(this, arguments);
+        this.listenTo(this.model, 'change:parent', this.autoresize, this);
+    },
+    autoresize: function() {
+        if (this.getParent()) {
+            var parentBounds = this.getParent().getBBox();
+            this.model.resize(parentBounds.width, 30);
+        }
+    },
+    getParent: function() {
+        return this.model.graph.getCell(this.model.attributes.parent);
+    },
+    onRemoveTrigger: function(evt) {
+        evt.stopPropagation();
+        this.getParent().removeTrigger(this.model.id);
+        this.getParent().unembed(this.model);
+        this.remove();
+    }
 });
 
-require.register("app.js", function(exports, require, module) {
-// @import jquery.js
+joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
+    events: {
+        'click .btn-remove-modifier': 'onRemoveModifier',
+    },
+    initialize: function(e) {
+        joint.dia.ElementView.prototype.initialize.apply(this, arguments);
+        this.listenTo(this.model, 'change:parent', this.autoresize, this);
+    },
+    autoresize: function() {
+        if (this.getParent()) {
+            var parentBounds = this.getParent().getBBox();
+            this.model.resize(parentBounds.width, 30);
+        }
+    },
+    getParent: function() {
+        return this.model.graph.getCell(this.model.attributes.parent);
+    },
+    onRemoveModifier: function(evt) {
+        this.getParent().removeModifier(this.model.id);
+        this.getParent().unembed(this.model);
+        this.remove();
+    }
+});
+
+joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
+
+    events: {
+        'click .btn-add-modifier': 'onAddModifier',
+        'click .btn-add-trigger': 'onAddTrigger',
+    },
+
+    initialize: function() {
+        joint.dia.ElementView.prototype.initialize.apply(this, arguments);
+        this.listenTo(this.model, 'change:embeds', this.layoutChildren, this);
+    },
+
+    layoutChildren: function() {
+        this.layoutModifiers();
+        this.layoutTriggers();
+    },
+
+    layoutTriggers: function() {
+        var options = this.model.get('triggers');
+        var optionHeight = this.model.get('optionHeight');
+        var offsetY = 70 + (this.model.get('options').length * optionHeight);
+        _.each(options, function(option) {
+            option.position(0, offsetY, {
+                parentRelative: true
+            });
+            offsetY += optionHeight;
+        }, this);
+    },
+
+    layoutModifiers: function() {
+        var options = this.model.get('options');
+        var optionHeight = this.model.get('optionHeight');
+        var offsetY = 50;
+        _.each(options, function(option) {
+            option.position(0, offsetY, {
+                parentRelative: true
+            });
+            offsetY += optionHeight;
+        }, this);
+    },
+
+    onAddTrigger: function() {
+        this.model.addTrigger()
+    },
+    onAddModifier: function() {
+        this.model.addModifier();
+    },
+
+});
+
+var app = app || {};
+
+app.Selection = Backbone.Collection.extend();
+
+app.SelectionView = Backbone.View.extend({
+
+    initialize: function(options) {
+        this.options = options;
+        _.bindAll(this, 'render');
+        this.listenTo(this.model, 'add reset change', this.render);
+        this.listenTo(this.model, 'remove', this.remove);
+    },
+
+    render: function() {
+
+        var paper = this.options.paper;
+
+        var boxTemplate = V('rect', {
+            fill: 'none',
+            'stroke': '#C6C7E2',
+            'stroke-width': 1,
+            'pointer-events': 'none'
+        });
+
+        //remove any existing boxes
+        _.invoke(this.boxes, 'remove');
+        this.boxes = [];
+
+        this.model.each(function(element) {
+            var box = boxTemplate.clone();
+            var p = 3; // Box padding.
+            box.attr(g.rect(_.extend({}, element.get('position'), element.get('size'))).moveAndExpand({
+                x: -p,
+                y: -p,
+                width: 2 * p,
+                height: 2 * p
+            }));
+            V(paper.viewport).append(box);
+            this.boxes.push(box);
+        }, this);
+
+        return this;
+    }
+});
+
+var app = app || {};
+
+app.Factory = {
+
+    createStateFromParams: function(params) {
+        var state = {
+            obs: {},
+            initial_state: false
+        }
+        return state;
+    },
+
+    createModifierFromParams: function(type, params) {
+        var modifier = {
+            type: type || '',
+            params: params || {}
+        }
+        return modifier;
+    },
+
+    createModifierTypeOb: function(time_limit, transition_type, start_time, end_time, relative_amount) {
+        return this.createModifierFromParams("Ob", {
+            "time_limit": time_limit || 10,
+            "transition_type": transition_type || "linear",
+            "start_time": start_time || 0,
+            "end_time": end_time || 10,
+            "relative_amount": relative_amount || 0,
+        });
+    },
+
+    createTriggerFromParams: function(type, params) {
+        var trigger = {
+            type: type || '',
+            params: params || {}
+        }
+        return trigger;
+    },
+
+    createTriggerTypeTimeLimit: function(time_limit, linked_state) {
+        return this.createTriggerFromParams("TimeLimit", {
+            "time_limit": time_limit || 10,
+            "linked_state": linked_state || ''
+        });
+    },
+
+    createTriggerTypeGiveDrug: function(comparison, drug, dose, dose_unit, linked_state) {
+        return this.createTriggerFromParams("GiveDrug", {
+            "comparison": comparison || '',
+            "drug": drug || '',
+            "dose": dose || 0,
+            "dose_unit": dose_unit || '',
+            "linked_state": linked_state || ''
+        });
+    },
+
+    createTrigger: function(id, name) {
+
+        var q = new joint.shapes.qad.Trigger({
+            id: 'trigger-' + id,
+            attrs: {
+                '.trigger-text': {
+                    text: name
+                }
+            },
+            ports: {
+                groups: {
+                    'out': {
+                        position: 'right',
+                        attrs: {
+                            circle: {
+                                magnet: true,
+                                fill: '#feb663',
+                                r: 14
+                            }
+                        }
+                    }
+                },
+                items: [{
+                    id: 'trigger-port-' + id,
+                    group: 'out',
+                    args: {},
+                }]
+            },
+            trigger_data: app.Factory.createTriggerFromParams()
+        });
+        return q;
+    },
+
+    createModifier: function(id, name) {
+        var q = new joint.shapes.qad.Modifier({
+            id: 'option-' + id,
+            attrs: {
+                '.option-text': {
+                    text: name
+                }
+            },
+            modifier_data: app.Factory.createModifierFromParams()
+        });
+        return q;
+    },
+
+    createQuestion: function(text) {
+        var q = new joint.shapes.qad.Question({
+            position: {
+                x: 400 - 50,
+                y: 30
+            },
+            size: {
+                width: 100,
+                height: 70
+            },
+            question: text,
+            inPorts: [{
+                id: 'in',
+                label: 'In'
+            }],
+            options: [],
+            triggers: [],
+            state_data: app.Factory.createStateFromParams(text)
+        });
+        return q;
+    },
+
+    createLink: function(source, target) {
+
+        return new joint.dia.Link({
+            source: {
+                id: source
+            },
+            target: {
+                id: target
+            },
+            attrs: {
+                '.marker-target': {
+                    d: 'M 10 0 L 0 5 L 10 10 z',
+                    fill: '#6a6c8a',
+                    stroke: '#6a6c8a'
+                },
+                '.connection': {
+                    stroke: '#6a6c8a',
+                    'stroke-width': 2
+                }
+            }
+        });
+    },
+
+};
+
+var app = app || {};
+
+app.helpers = {
+    export_to_scenario_json: function(graph) {
+
+        var export_data = {
+            "starting_state": "not_yet_set",
+            "states": {}
+        };
+
+        //Get list of links for lookup when adding triggers
+        var graph_links = graph.getLinks();
+        var link_lookup = {};
+
+        for (var link_count = 0; link_count < graph_links.length; link_count++) {
+            var link = graph_links[link_count];
+            link_lookup[link.get('source').id] = link.get('target').id;
+        }
+
+        var state_cells = app.helpers.get_states(graph);
+        for (var state_count = 0; state_count < state_cells.length; state_count++) {
+
+            var state = state_cells[state_count];
+            export_data.states[state.id] = {
+                "obs": state.getStateParams().state_data.obs,
+                "triggers": {},
+                "modifiers": {}
+            };
+
+            //Store the id of the starting state
+            if (state.getStateParams().state_data.initial_state) export_data.starting_state = state.id;
+
+            var state_triggers = state.get('triggers');
+            for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
+                var trigger = state_triggers[trigger_count];
+                var trigger_data = trigger.getTriggerParams().trigger_data;
+                if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
+                export_data.states[state.id].triggers[trigger.id] = trigger_data;
+            }
+
+            var state_modifiers = state.get('options');
+            for (var modifier_count = 0; modifier_count < state_modifiers.length; modifier_count++) {
+                var modifier = state_modifiers[modifier_count];
+                var modifier_data = modifier.getModifierParams().modifier_data;
+                export_data.states[state.id].modifiers[modifier.id] = modifier_data;
+            }
+
+        }
+
+        console.log(export_data);
+
+    },
+
+    get_states: function(graph) {
+        var state_cells = [];
+        var graph_cells = graph.getCells();
+        for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
+            var state = graph_cells[cell_count];
+            if (state.get('type') == 'qad.Question') {
+                state_cells.push(state);
+            }
+
+        }
+        return state_cells;
+    }
+}
+
+;// @import jquery.js
 // @import lodash.js
 // @import backbone.js
 // @import geometry.js
@@ -19479,230 +19884,6 @@ app.AppView = Backbone.View.extend({
 
 });
 
-});
-
-require.register("factory.js", function(exports, require, module) {
-var app = app || {};
-
-app.Factory = {
-
-    createStateFromParams: function(params) {
-        var state = {
-            obs: {},
-            initial_state: false
-        }
-        return state;
-    },
-
-    createModifierFromParams: function(type, params) {
-        var modifier = {
-            type: type || '',
-            params: params || {}
-        }
-        return modifier;
-    },
-
-    createModifierTypeOb: function(time_limit, transition_type, start_time, end_time, relative_amount) {
-        return this.createModifierFromParams("Ob", {
-            "time_limit": time_limit || 10,
-            "transition_type": transition_type || "linear",
-            "start_time": start_time || 0,
-            "end_time": end_time || 10,
-            "relative_amount": relative_amount || 0,
-        });
-    },
-
-    createTriggerFromParams: function(type, params) {
-        var trigger = {
-            type: type || '',
-            params: params || {}
-        }
-        return trigger;
-    },
-
-    createTriggerTypeTimeLimit: function(time_limit, linked_state) {
-        return this.createTriggerFromParams("TimeLimit", {
-            "time_limit": time_limit || 10,
-            "linked_state": linked_state || ''
-        });
-    },
-
-    createTriggerTypeGiveDrug: function(comparison, drug, dose, dose_unit, linked_state) {
-        return this.createTriggerFromParams("GiveDrug", {
-            "comparison": comparison || '',
-            "drug": drug || '',
-            "dose": dose || 0,
-            "dose_unit": dose_unit || '',
-            "linked_state": linked_state || ''
-        });
-    },
-
-    createTrigger: function(id, name) {
-
-        var q = new joint.shapes.qad.Trigger({
-            id: 'trigger-' + id,
-            attrs: {
-                '.trigger-text': {
-                    text: name
-                }
-            },
-            ports: {
-                groups: {
-                    'out': {
-                        position: 'right',
-                        attrs: {
-                            circle: {
-                                magnet: true,
-                                fill: '#feb663',
-                                r: 14
-                            }
-                        }
-                    }
-                },
-                items: [{
-                    id: 'trigger-port-' + id,
-                    group: 'out',
-                    args: {},
-                }]
-            },
-            trigger_data: app.Factory.createTriggerFromParams()
-        });
-        return q;
-    },
-
-    createModifier: function(id, name) {
-        var q = new joint.shapes.qad.Modifier({
-            id: 'option-' + id,
-            attrs: {
-                '.option-text': {
-                    text: name
-                }
-            },
-            modifier_data: app.Factory.createModifierFromParams()
-        });
-        return q;
-    },
-
-    createQuestion: function(text) {
-        var q = new joint.shapes.qad.Question({
-            position: {
-                x: 400 - 50,
-                y: 30
-            },
-            size: {
-                width: 100,
-                height: 70
-            },
-            question: text,
-            inPorts: [{
-                id: 'in',
-                label: 'In'
-            }],
-            options: [],
-            triggers: [],
-            state_data: app.Factory.createStateFromParams(text)
-        });
-        return q;
-    },
-
-    createLink: function(source, target) {
-
-        return new joint.dia.Link({
-            source: {
-                id: source
-            },
-            target: {
-                id: target
-            },
-            attrs: {
-                '.marker-target': {
-                    d: 'M 10 0 L 0 5 L 10 10 z',
-                    fill: '#6a6c8a',
-                    stroke: '#6a6c8a'
-                },
-                '.connection': {
-                    stroke: '#6a6c8a',
-                    'stroke-width': 2
-                }
-            }
-        });
-    },
-
-};
-
-});
-
-require.register("helpers.js", function(exports, require, module) {
-var app = app || {};
-
-app.helpers = {
-    export_to_scenario_json: function(graph) {
-
-        var export_data = {
-            "starting_state": "not_yet_set",
-            "states": {}
-        };
-
-        //Get list of links for lookup when adding triggers
-        var graph_links = graph.getLinks();
-        var link_lookup = {};
-
-        for (var link_count = 0; link_count < graph_links.length; link_count++) {
-            var link = graph_links[link_count];
-            link_lookup[link.get('source').id] = link.get('target').id;
-        }
-
-        var state_cells = app.helpers.get_states(graph);
-        for (var state_count = 0; state_count < state_cells.length; state_count++) {
-
-            var state = state_cells[state_count];
-            export_data.states[state.id] = {
-                "obs": state.getStateParams().state_data.obs,
-                "triggers": {},
-                "modifiers": {}
-            };
-
-            //Store the id of the starting state
-            if (state.getStateParams().state_data.initial_state) export_data.starting_state = state.id;
-
-            var state_triggers = state.get('triggers');
-            for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
-                var trigger = state_triggers[trigger_count];
-                var trigger_data = trigger.getTriggerParams().trigger_data;
-                if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
-                export_data.states[state.id].triggers[trigger.id] = trigger_data;
-            }
-
-            var state_modifiers = state.get('options');
-            for (var modifier_count = 0; modifier_count < state_modifiers.length; modifier_count++) {
-                var modifier = state_modifiers[modifier_count];
-                var modifier_data = modifier.getModifierParams().modifier_data;
-                export_data.states[state.id].modifiers[modifier.id] = modifier_data;
-            }
-
-        }
-
-        console.log(export_data);
-
-    },
-
-    get_states: function(graph) {
-        var state_cells = [];
-        var graph_cells = graph.getCells();
-        for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
-            var state = graph_cells[cell_count];
-            if (state.get('type') == 'qad.Question') {
-                state_cells.push(state);
-            }
-
-        }
-        return state_cells;
-    }
-}
-
-});
-
-;require.register("index.js", function(exports, require, module) {
 var app = app || {};
 
 $(function() {
@@ -20095,211 +20276,6 @@ $(function() {
 
 });
 
-});
 
-require.register("joint.shapes.qad.js", function(exports, require, module) {
-/*! Rappid v2.1.0 - HTML5 Diagramming Framework - TRIAL VERSION
-
-Copyright (c) 2015 client IO
-
- 2017-09-14 
-
-
-This Source Code Form is subject to the terms of the Rappid Trial License
-, v. 2.0. If a copy of the Rappid License was not distributed with this
-file, You can obtain one at http://jointjs.com/license/rappid_v2.txt
- or from the Rappid archive as was distributed by client IO. See the LICENSE file.*/
-
-
-joint.shapes.qad = {};
-
-joint.util.measureText = function(text, attrs) {
-
-    var fontSize = parseInt(attrs.fontSize, 10) || 10;
-
-    var svgDocument = V('svg').node;
-    var textElement = V('<text><tspan></tspan></text>').node;
-    var textSpan = textElement.firstChild;
-    var textNode = document.createTextNode('');
-
-    textSpan.appendChild(textNode);
-    svgDocument.appendChild(textElement);
-    document.body.appendChild(svgDocument);
-
-    var lines = text.split('\n');
-    var width = 0;
-
-    // Find the longest line width.
-    _.each(lines, function(line) {
-
-        textNode.data = line;
-        var lineWidth = textSpan.getComputedTextLength();
-
-        width = Math.max(width, lineWidth);
-    });
-
-    var height = lines.length * (fontSize * 1.2);
-
-    V(svgDocument).remove();
-
-    return {
-        width: width,
-        height: height
-    };
-};
-
-joint.shapes.qad.TriggerView = joint.dia.ElementView.extend({
-    events: {
-        'click .btn-remove-trigger': 'onRemoveTrigger',
-    },
-    initialize: function(e) {
-        joint.dia.ElementView.prototype.initialize.apply(this, arguments);
-        this.listenTo(this.model, 'change:parent', this.autoresize, this);
-    },
-    autoresize: function() {
-        if (this.getParent()) {
-            var parentBounds = this.getParent().getBBox();
-            this.model.resize(parentBounds.width, 30);
-        }
-    },
-    getParent: function() {
-        return this.model.graph.getCell(this.model.attributes.parent);
-    },
-    onRemoveTrigger: function(evt) {
-        evt.stopPropagation();
-        this.getParent().removeTrigger(this.model.id);
-        this.getParent().unembed(this.model);
-        this.remove();
-    }
-});
-
-joint.shapes.qad.ModifierView = joint.dia.ElementView.extend({
-    events: {
-        'click .btn-remove-modifier': 'onRemoveModifier',
-    },
-    initialize: function(e) {
-        joint.dia.ElementView.prototype.initialize.apply(this, arguments);
-        this.listenTo(this.model, 'change:parent', this.autoresize, this);
-    },
-    autoresize: function() {
-        if (this.getParent()) {
-            var parentBounds = this.getParent().getBBox();
-            this.model.resize(parentBounds.width, 30);
-        }
-    },
-    getParent: function() {
-        return this.model.graph.getCell(this.model.attributes.parent);
-    },
-    onRemoveModifier: function(evt) {
-        this.getParent().removeModifier(this.model.id);
-        this.getParent().unembed(this.model);
-        this.remove();
-    }
-});
-
-joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
-
-    events: {
-        'click .btn-add-modifier': 'onAddModifier',
-        'click .btn-add-trigger': 'onAddTrigger',
-    },
-
-    initialize: function() {
-        joint.dia.ElementView.prototype.initialize.apply(this, arguments);
-        this.listenTo(this.model, 'change:embeds', this.layoutChildren, this);
-    },
-
-    layoutChildren: function() {
-        this.layoutModifiers();
-        this.layoutTriggers();
-    },
-
-    layoutTriggers: function() {
-        var options = this.model.get('triggers');
-        var optionHeight = this.model.get('optionHeight');
-        var offsetY = 70 + (this.model.get('options').length * optionHeight);
-        _.each(options, function(option) {
-            option.position(0, offsetY, {
-                parentRelative: true
-            });
-            offsetY += optionHeight;
-        }, this);
-    },
-
-    layoutModifiers: function() {
-        var options = this.model.get('options');
-        var optionHeight = this.model.get('optionHeight');
-        var offsetY = 50;
-        _.each(options, function(option) {
-            option.position(0, offsetY, {
-                parentRelative: true
-            });
-            offsetY += optionHeight;
-        }, this);
-    },
-
-    onAddTrigger: function() {
-        this.model.addTrigger()
-    },
-    onAddModifier: function() {
-        this.model.addModifier();
-    },
-
-});
-
-});
-
-require.register("model_editor.js", function(exports, require, module) {
-
-});
-
-;require.register("selection.js", function(exports, require, module) {
-var app = app || {};
-
-app.Selection = Backbone.Collection.extend();
-
-app.SelectionView = Backbone.View.extend({
-
-    initialize: function(options) {
-        this.options = options;
-        _.bindAll(this, 'render');
-        this.listenTo(this.model, 'add reset change', this.render);
-        this.listenTo(this.model, 'remove', this.remove);
-    },
-
-    render: function() {
-
-        var paper = this.options.paper;
-
-        var boxTemplate = V('rect', {
-            fill: 'none',
-            'stroke': '#C6C7E2',
-            'stroke-width': 1,
-            'pointer-events': 'none'
-        });
-
-        //remove any existing boxes
-        _.invoke(this.boxes, 'remove');
-        this.boxes = [];
-
-        this.model.each(function(element) {
-            var box = boxTemplate.clone();
-            var p = 3; // Box padding.
-            box.attr(g.rect(_.extend({}, element.get('position'), element.get('size'))).moveAndExpand({
-                x: -p,
-                y: -p,
-                width: 2 * p,
-                height: 2 * p
-            }));
-            V(paper.viewport).append(box);
-            this.boxes.push(box);
-        }, this);
-
-        return this;
-    }
-});
-
-});
-
-
+;
 //# sourceMappingURL=app.js.map
