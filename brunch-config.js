@@ -3,17 +3,16 @@ module.exports = {
         javascripts: {
             order: {
                 before: [
-                    'app/rappid.min.js',
-                    'app/joint.shapes.qad.js',
-                    'app/selection.js',
-                    'app/factory.js',
-                    'app/helpers.js',
-                    'app/app.js',
-                    'app/index.js',
+                    'app/designer/joint.shapes.qad.js',
+                    'app/designer/selection.js',
+                    'app/designer/factory.js',
+                    'app/signer/helpers.js',
+                    'app/signer/app.js',
+                    'app/signer/index.js',
                 ]
             },
             joinTo: {
-                'app.js': 'app/*.js'
+                'app.js': ['app/designer/*.js']
             }
         }
     },
