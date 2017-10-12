@@ -22,7 +22,7 @@ app.dictionary = {
 
 app.AppView = Backbone.View.extend({
 
-    el: '#app',
+    el: '#app-container',
 
     events: {
         'click #add-state': 'addState',
