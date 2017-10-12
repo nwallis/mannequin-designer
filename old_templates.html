@@ -1,3 +1,21 @@
+<script type="text/template" id="modifier-type-template">
+  <div class="row">
+    <div class="col">
+      <label for="modifier-name">Modifier name</label>
+      <input type="text" id="modifier-name" value="<%= model_name  %>" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label for="modifier-type">Modifier type</label>
+      <select id="modifier-type" name="">
+        <option value="">Please select..</option>
+        <option value="Ob" <%= (modifier_data.type == 'Ob') ? "selected" : "" %>>Ob</option>
+      </select>
+    </div>
+  </div>
+  <div id="modifier-parameters"></div>
+</script>
 <script type="text/template" id="trigger-type-template">
   <div class="row">
     <div class="col">

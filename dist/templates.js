@@ -149,6 +149,24 @@ if (typeof define === 'function' && define.amd) {
 }
  });
 
+;require.define("templates/modifier_type_ob.jade", function(exports, require, module) { var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (modifier_data) {
+buf.push("<div class=\"row\"><div class=\"col\"><label for=\"ob_property\">Ob to modify</label><select id=\"ob_property\" class=\"select-value-change\"><option value=\"\">Please select...</option></option><option value=\"heart_rate\"" + (jade.attr("selected", modifier_data.params.transition_type=='heart_rate', true, false)) + ">Heart rate</option><option value=\"foot_smell\"" + (jade.attr("selected", modifier_data.params.transition_type=='foot_smell', true, false)) + ">Foot smell </option><option value=\"hair_loss\"" + (jade.attr("selected", modifier_data.params.transition_type=='hair_loss', true, false)) + ">Hair loss </option></select></div></div><div class=\"row\"><div class=\"col\"><label for=\"transition_type\">Transition type</label><select id=\"transition_type\" class=\"select-value-change\"><option value=\"\">Please select...</option></option><option value=\"linear\"" + (jade.attr("selected", modifier_data.params.transition_type=='linear', true, false)) + ">Linear </option><option value=\"exponential\"" + (jade.attr("selected", modifier_data.params.transition_type=='exponential', true, false)) + ">Exponential </option></select></div></div><div class=\"row\"><div class=\"col\"><label for=\"start_time\">Start time</label><input id=\"start_time\" type\"text=\"type\"text\" placeholder=\"Enter a value\"" + (jade.attr("value", modifier_data.params.start_time, true, false)) + " class=\"keypress-value-change\"/></div></div><div class=\"row\"><div class=\"col\"><label for=\"end_time\">End time </label><input id=\"end_time\" type\"text=\"type\"text\" placeholder=\"Enter a value\"" + (jade.attr("value", modifier_data.params.end_time, true, false)) + " class=\"keypress-value-change\"/></div></div><div class=\"row\"><div class=\"col\"><label for=\"duration\">Duration</label><input id=\"duration\" type\"text=\"type\"text\" placeholder=\"Enter a value\"" + (jade.attr("value", modifier_data.params.duration, true, false)) + " class=\"keypress-value-change\"/></div></div>");}.call(this,"modifier_data" in locals_for_with?locals_for_with.modifier_data:typeof modifier_data!=="undefined"?modifier_data:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+ });
+
 ;require.define("templates/question.jade", function(exports, require, module) { var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};

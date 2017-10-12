@@ -176,6 +176,13 @@ app.AppView = Backbone.View.extend({
             el: "#element-type",
             events: {
                 "change #modifier-type": "onModifierTypeChange",
+                "change #modifier-name": "onModifierNameChange",
+                "keyup #modifier-name": "onModifierNameChange",
+            },
+            onModifierNameChange: function(evt) {
+                this.model.attr(".option-text", {
+                    text: evt.currentTarget.value
+                });
             },
             onModifierTypeChange: function(evt) {
                 if (evt.currentTarget.value != '') {
@@ -218,7 +225,7 @@ app.AppView = Backbone.View.extend({
                 "keyup .keypress-value-change": "storeChangedValue",
             },
             initialize: function() {
-                this.template = _.template($('#modifier-type-ob-template').html());
+                this.template = require('templates/modifier_type_ob.jade');
                 this.render();
             },
             render: function() {

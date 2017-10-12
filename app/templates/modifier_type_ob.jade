@@ -1,0 +1,27 @@
+.row
+  .col
+    label(for="ob_property") Ob to modify
+    select#ob_property.select-value-change
+      option(value="") Please select...</option>
+      option(value="heart_rate" selected=modifier_data.params.transition_type=='heart_rate') Heart rate
+      option(value="foot_smell" selected=modifier_data.params.transition_type=='foot_smell') Foot smell 
+      option(value="hair_loss" selected=modifier_data.params.transition_type=='hair_loss') Hair loss 
+.row
+  .col
+    label(for="transition_type") Transition type
+    select#transition_type.select-value-change
+      option(value="") Please select...</option>
+      option(value="linear" selected=modifier_data.params.transition_type=='linear') Linear 
+      option(value="exponential" selected=modifier_data.params.transition_type=='exponential') Exponential 
+.row
+  .col
+    label(for="start_time") Start time
+    input#start_time.keypress-value-change(type"text", placeholder="Enter a value", value=modifier_data.params.start_time)
+.row
+  .col
+    label(for="end_time") End time 
+    input#end_time.keypress-value-change(type"text", placeholder="Enter a value", value=modifier_data.params.end_time)
+.row
+  .col
+    label(for="duration") Duration
+    input#duration.keypress-value-change(type"text", placeholder="Enter a value", value=modifier_data.params.duration)
