@@ -68,41 +68,6 @@
       </div>
     </section>
 
-    <!--<script type="text/template" id="question-template">
-      <g class="rotatable">
-        <g class="scalable">
-          <rect class="body"/>
-        </g>
-        <text class="question-text"></text>
-        <path class="btn-add-modifier" d="M5,0 10,0 10,5 15,5 15,10 10,10 10,15 5,15 5,10 0,10 0,5 5,5z"/>
-        <path class="btn-add-trigger" d="M5,0 10,0 10,5 15,5 15,10 10,10 10,15 5,15 5,10 0,10 0,5 5,5z"/>
-      </g>
-    </script>
-
-    <script type="text/template" id="trigger-template">
-      <g class="rotatable trigger">
-        <g class="scalable">
-          <rect class="trigger-rect"></rect>
-        </g>
-        <path class="btn-remove-trigger" d="M0,0 15,0 15,5 0,5z"></path>
-        <text class="trigger-text"></text>
-      </g>
-    </script>
-
-    <script type="text/template" id="modifier-template">
-      <g class="rotatable option">
-        <g class="scalable">
-          <rect class="option-rect"></rect>
-        </g>
-        <path class="btn-remove-modifier" d="M0,0 15,0 15,5 0,5z"></path>
-        <text class="option-text"></text>
-      </g>
-    </script>-->
-
-    <script type="text/template" id="trigger-type-time-limit-template">
-      <label for="time_limit">Duration</label>
-      <input type="text" id="time_limit" value="<%= trigger_data.params.time_limit %>">
-    </script>
 
     <script type="text/template" id="trigger-type-give-drug-template">
       <div class="row">
@@ -144,49 +109,6 @@
       </div>
     </script>
 
-    <!--<script type="text/template" id="state-parameters-template">
-      <form>
-        <div class="form-group">
-          <label for="state-name">State name</label>
-          <input class="form-control" type="text" id="state-name" value="<%= model_name %>"/>
-        </div>
-        <div class="form-group">
-          <label class="form-check-label" for="initial-state-check ">
-            <input type="checkbox" id="initial-state-check" class="form-check-input"/>
-            Initial state?
-          </label>
-        </div>
-        <div class="form-group">
-          <label for="ob-select">Add ob</label>
-          <select id="ob-select" name="" class="form-control">
-            <option value="">Please select...</option>
-            <option value="heart_rate" data-default-value="0">Heart rate</option>
-            <option value="foot_smell" data-default-value="10">Foot smell</option>
-            <option value="hair_loss" data-default-value="22">Hair loss</option>
-          </select>
-        </div>
-        <div class="row">
-          <div class="col">
-            <table class="table" >
-              <thead class="thead-inverse">
-                <tr>
-                  <th>Ob</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% for(var ob in state_data.obs){  %>
-                <tr>
-                  <td><%= app.dictionary.ob_names[ob] || ob %></td> 
-                  <td><input type="text" id="ob-value-<%= ob %>" class="ob-value" data-ob-key="<%= ob %>" value="<%= state_data.obs[ob] %>"/></td>
-                </tr>
-                <% } %>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </form>
-    </script>-->
 
     <script type="text/template" id="trigger-type-template">
       <div class="row">

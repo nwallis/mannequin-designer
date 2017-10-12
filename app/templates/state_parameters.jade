@@ -3,8 +3,9 @@ form
     label(for='state-name') State name
     input#state-name.form-control(type='text', value=model_name)
   .form-group
-    label.form-check-label(for='initial-state-check ') Initial state?
+    label.form-check-label(for='initial-state-check ')
       input#initial-state-check.form-check-input(type='checkbox')
+      | Initial state?
   .form-group
     label(for='ob-select') Add ob
     select#ob-select.form-control(name='')

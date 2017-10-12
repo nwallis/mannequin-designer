@@ -1,0 +1,9 @@
+.row
+  .col
+    label(for="comparison") Comparison
+    select#comparison
+      option(value="") Please select...</option>
+      option(value="at_least") <%= (trigger_data.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
+      option(value="no_more_than") <%= (trigger_data.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
+      option(value="exactly") <%= (trigger_data.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
+

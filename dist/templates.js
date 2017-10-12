@@ -154,7 +154,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (app, model_name, state_data) {
-buf.push("<form><div class=\"form-group\"><label for=\"state-name\">State name</label><input id=\"state-name\" type=\"text\"" + (jade.attr("value", model_name, true, false)) + " class=\"form-control\"/></div><div class=\"form-group\"><label for=\"initial-state-check \" class=\"form-check-label\">Initial state?<input id=\"initial-state-check\" type=\"checkbox\" class=\"form-check-input\"/></label></div><div class=\"form-group\"><label for=\"ob-select\">Add ob</label><select id=\"ob-select\" name=\"\" class=\"form-control\"><option value=\"\">Please select...</option><option value=\"heart_rate\" data-default-value=\"0\">Heart rate</option><option value=\"foot_smell\" data-default-value=\"10\">Foot smell</option><option value=\"hair_loss\" data-default-value=\"22\">Hair loss</option></select></div><div class=\"row\"><div class=\"col\"><table class=\"table\"><thead class=\"thead-inverse\"><tr><th>Ob</th><th>Value</th></tr></thead><tbody>");
+buf.push("<form><div class=\"form-group\"><label for=\"state-name\">State name</label><input id=\"state-name\" type=\"text\"" + (jade.attr("value", model_name, true, false)) + " class=\"form-control\"/></div><div class=\"form-group\"><label for=\"initial-state-check \" class=\"form-check-label\"><input id=\"initial-state-check\" type=\"checkbox\" class=\"form-check-input\"/>Initial state?</label></div><div class=\"form-group\"><label for=\"ob-select\">Add ob</label><select id=\"ob-select\" name=\"\" class=\"form-control\"><option value=\"\">Please select...</option><option value=\"heart_rate\" data-default-value=\"0\">Heart rate</option><option value=\"foot_smell\" data-default-value=\"10\">Foot smell</option><option value=\"hair_loss\" data-default-value=\"22\">Hair loss</option></select></div><div class=\"row\"><div class=\"col\"><table class=\"table\"><thead class=\"thead-inverse\"><tr><th>Ob</th><th>Value</th></tr></thead><tbody>");
 for(var ob in state_data.obs){
 {
 buf.push("<tr><td>" + (((jade_interp = app.dictionary.ob_names[ob] || ob) == null ? '' : jade_interp)) + "</td><td><input" + (jade.attr("id", "ob-value-" + ob, true, false)) + " type=\"text\"" + (jade.attr("data-ob-key", ob, true, false)) + (jade.attr("value", state_data.obs[ob], true, false)) + " class=\"ob-value\"/></td></tr>");
@@ -179,6 +179,24 @@ var jade_mixins = {};
 var jade_interp;
 
 buf.push("<g class=\"rotatable trigger\"><g class=\"scalable\"><rect class=\"trigger-rect\"></rect></g><path d=\"M0,0 15,0 15,5 0,5z\" class=\"btn-remove-trigger\"></path><text class=\"trigger-text\"></text></g>");;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+ });
+
+;require.define("templates/trigger_type_give_drug.jade", function(exports, require, module) { var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+
+buf.push("<div class=\"row\"><div class=\"col\"><label for=\"comparison\">Comparison</label><select id=\"comparison\"><option value=\"\">Please select...</option></option><option value=\"at_least\"><%= (trigger_data.params.comparison == 'at_least') ? \"selected\" : \"\" %> >At least</option></option><option value=\"no_more_than\"><%= (trigger_data.params.comparison == 'no_more_than') ? \"selected\" : \"\" %> >No more than</option></option><option value=\"exactly\"><%= (trigger_data.params.comparison == 'exactly') ? \"selected\" : \"\" %> >Exactly</option></option></select></div></div>");;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

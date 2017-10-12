@@ -818,7 +818,7 @@ app.AppView = Backbone.View.extend({
                 "keyup #dose": "storeChangedValue",
             },
             initialize: function() {
-                this.template = require('templates/trigger_type_give_drug.jade')();
+                this.template = require('templates/trigger_type_give_drug.jade');
                 this.render();
             },
             render: function() {
