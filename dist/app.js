@@ -249,52 +249,73 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
 
 });
 
-var app = app || {};
+var app = window.app = {};
+var qad = window.qad || {};
 
-app.Selection = Backbone.Collection.extend();
+app.helpers = {
+    export_to_scenario_json: function(graph) {
 
-app.SelectionView = Backbone.View.extend({
+        var export_data = {
+            "starting_state": "not_yet_set",
+            "states": {}
+        };
 
-    initialize: function(options) {
-        this.options = options;
-        _.bindAll(this, 'render');
-        this.listenTo(this.model, 'add reset change', this.render);
-        this.listenTo(this.model, 'remove', this.remove);
+        //Get list of links for lookup when adding triggers
+        var graph_links = graph.getLinks();
+        var link_lookup = {};
+
+        for (var link_count = 0; link_count < graph_links.length; link_count++) {
+            var link = graph_links[link_count];
+            link_lookup[link.get('source').id] = link.get('target').id;
+        }
+
+        var state_cells = app.helpers.get_states(graph);
+        for (var state_count = 0; state_count < state_cells.length; state_count++) {
+
+            var state = state_cells[state_count];
+            export_data.states[state.id] = {
+                "obs": state.getStateParams().state_data.obs,
+                "triggers": {},
+                "modifiers": {}
+            };
+
+            //Store the id of the starting state
+            if (state.getStateParams().state_data.initial_state) export_data.starting_state = state.id;
+
+            var state_triggers = state.get('triggers');
+            for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
+                var trigger = state_triggers[trigger_count];
+                var trigger_data = trigger.getTriggerParams().trigger_data;
+                if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
+                export_data.states[state.id].triggers[trigger.id] = trigger_data;
+            }
+
+            var state_modifiers = state.get('options');
+            for (var modifier_count = 0; modifier_count < state_modifiers.length; modifier_count++) {
+                var modifier = state_modifiers[modifier_count];
+                var modifier_data = modifier.getModifierParams().modifier_data;
+                export_data.states[state.id].modifiers[modifier.id] = modifier_data;
+            }
+
+        }
+
+        console.log(export_data);
+
     },
 
-    render: function() {
+    get_states: function(graph) {
+        var state_cells = [];
+        var graph_cells = graph.getCells();
+        for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
+            var state = graph_cells[cell_count];
+            if (state.get('type') == 'qad.Question') {
+                state_cells.push(state);
+            }
 
-        var paper = this.options.paper;
-
-        var boxTemplate = V('rect', {
-            fill: 'none',
-            'stroke': '#C6C7E2',
-            'stroke-width': 1,
-            'pointer-events': 'none'
-        });
-
-        //remove any existing boxes
-        _.invoke(this.boxes, 'remove');
-        this.boxes = [];
-
-        this.model.each(function(element) {
-            var box = boxTemplate.clone();
-            var p = 3; // Box padding.
-            box.attr(g.rect(_.extend({}, element.get('position'), element.get('size'))).moveAndExpand({
-                x: -p,
-                y: -p,
-                width: 2 * p,
-                height: 2 * p
-            }));
-            V(paper.viewport).append(box);
-            this.boxes.push(box);
-        }, this);
-
-        return this;
+        }
+        return state_cells;
     }
-});
-
-var app = app || {};
+}
 
 app.Factory = {
 
@@ -442,86 +463,47 @@ app.Factory = {
 
 };
 
-var app = app || {};
+app.Selection = Backbone.Collection.extend();
+app.SelectionView = Backbone.View.extend({
 
-app.helpers = {
-    export_to_scenario_json: function(graph) {
-
-        var export_data = {
-            "starting_state": "not_yet_set",
-            "states": {}
-        };
-
-        //Get list of links for lookup when adding triggers
-        var graph_links = graph.getLinks();
-        var link_lookup = {};
-
-        for (var link_count = 0; link_count < graph_links.length; link_count++) {
-            var link = graph_links[link_count];
-            link_lookup[link.get('source').id] = link.get('target').id;
-        }
-
-        var state_cells = app.helpers.get_states(graph);
-        for (var state_count = 0; state_count < state_cells.length; state_count++) {
-
-            var state = state_cells[state_count];
-            export_data.states[state.id] = {
-                "obs": state.getStateParams().state_data.obs,
-                "triggers": {},
-                "modifiers": {}
-            };
-
-            //Store the id of the starting state
-            if (state.getStateParams().state_data.initial_state) export_data.starting_state = state.id;
-
-            var state_triggers = state.get('triggers');
-            for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
-                var trigger = state_triggers[trigger_count];
-                var trigger_data = trigger.getTriggerParams().trigger_data;
-                if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
-                export_data.states[state.id].triggers[trigger.id] = trigger_data;
-            }
-
-            var state_modifiers = state.get('options');
-            for (var modifier_count = 0; modifier_count < state_modifiers.length; modifier_count++) {
-                var modifier = state_modifiers[modifier_count];
-                var modifier_data = modifier.getModifierParams().modifier_data;
-                export_data.states[state.id].modifiers[modifier.id] = modifier_data;
-            }
-
-        }
-
-        console.log(export_data);
-
+    initialize: function(options) {
+        this.options = options;
+        _.bindAll(this, 'render');
+        this.listenTo(this.model, 'add reset change', this.render);
+        this.listenTo(this.model, 'remove', this.remove);
     },
 
-    get_states: function(graph) {
-        var state_cells = [];
-        var graph_cells = graph.getCells();
-        for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
-            var state = graph_cells[cell_count];
-            if (state.get('type') == 'qad.Question') {
-                state_cells.push(state);
-            }
+    render: function() {
 
-        }
-        return state_cells;
+        var paper = this.options.paper;
+
+        var boxTemplate = V('rect', {
+            fill: 'none',
+            'stroke': '#C6C7E2',
+            'stroke-width': 1,
+            'pointer-events': 'none'
+        });
+
+        //remove any existing boxes
+        _.invoke(this.boxes, 'remove');
+        this.boxes = [];
+
+        this.model.each(function(element) {
+            var box = boxTemplate.clone();
+            var p = 3; // Box padding.
+            box.attr(g.rect(_.extend({}, element.get('position'), element.get('size'))).moveAndExpand({
+                x: -p,
+                y: -p,
+                width: 2 * p,
+                height: 2 * p
+            }));
+            V(paper.viewport).append(box);
+            this.boxes.push(box);
+        }, this);
+
+        return this;
     }
-}
-
-;// @import jquery.js
-// @import lodash.js
-// @import backbone.js
-// @import geometry.js
-// @import vectorizer.js
-// @import joint.clean.js
-// @import joint.shapes.qad.js
-// @import selection.js
-// @import factory.js
-// @import snippet.js
-
-var app = app || {};
-var qad = window.qad || {};
+});
 
 app.dictionary = {
     "ob_names": {
@@ -697,14 +679,14 @@ app.AppView = Backbone.View.extend({
             },
             onModifierTypeChange: function(evt) {
                 if (evt.currentTarget.value != '') {
-                    var new_data = window["app"]["Factory"]["createModifierType" + evt.currentTarget.value]();
+                    var new_data = window.app.Factory["createModifierType" + evt.currentTarget.value]();
                     this.model.set('modifier_data', new_data);
                     this.createParametersView();
                 }
             },
             createParametersView: function(type) {
                 if (this.parameterView) this.parameterView.remove();
-                this.parameterView = new window["app"]["editor"]["modifiers"][this.model.getModifierParams().modifier_data.type + "View"]({
+                this.parameterView = new window.app.editor.modifiers[this.model.getModifierParams().modifier_data.type + "View"]({
                     model: this.model.getModifierParams()
                 });
             },
@@ -935,8 +917,6 @@ app.AppView = Backbone.View.extend({
     },
 
 });
-
-var app = app || {};
 
 $(function() {
 
@@ -1326,8 +1306,7 @@ $(function() {
 
 });
 
-
-;(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jade = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.jade = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
 /**

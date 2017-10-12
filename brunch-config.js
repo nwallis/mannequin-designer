@@ -4,10 +4,6 @@ module.exports = {
             order: {
                 before: [
                     'app/designer/joint.shapes.qad.js',
-                    'app/designer/selection.js',
-                    'app/designer/factory.js',
-                    'app/designer/helpers.js',
-                    'app/designer/app.js',
                     'app/designer/index.js',
                 ]
             },
@@ -18,6 +14,11 @@ module.exports = {
         templates: {
             joinTo: {
                 'templates.js': /app\/templates.*/
+            }
+        },
+        stylesheets: {
+            joinTo: {
+                "designer.css": /app\/css.*/
             }
         }
     },

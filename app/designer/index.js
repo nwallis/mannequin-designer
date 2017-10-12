@@ -1,4 +1,671 @@
-var app = app || {};
+var app = window.app = {};
+var qad = window.qad || {};
+
+app.helpers = {
+    export_to_scenario_json: function(graph) {
+
+        var export_data = {
+            "starting_state": "not_yet_set",
+            "states": {}
+        };
+
+        //Get list of links for lookup when adding triggers
+        var graph_links = graph.getLinks();
+        var link_lookup = {};
+
+        for (var link_count = 0; link_count < graph_links.length; link_count++) {
+            var link = graph_links[link_count];
+            link_lookup[link.get('source').id] = link.get('target').id;
+        }
+
+        var state_cells = app.helpers.get_states(graph);
+        for (var state_count = 0; state_count < state_cells.length; state_count++) {
+
+            var state = state_cells[state_count];
+            export_data.states[state.id] = {
+                "obs": state.getStateParams().state_data.obs,
+                "triggers": {},
+                "modifiers": {}
+            };
+
+            //Store the id of the starting state
+            if (state.getStateParams().state_data.initial_state) export_data.starting_state = state.id;
+
+            var state_triggers = state.get('triggers');
+            for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
+                var trigger = state_triggers[trigger_count];
+                var trigger_data = trigger.getTriggerParams().trigger_data;
+                if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
+                export_data.states[state.id].triggers[trigger.id] = trigger_data;
+            }
+
+            var state_modifiers = state.get('options');
+            for (var modifier_count = 0; modifier_count < state_modifiers.length; modifier_count++) {
+                var modifier = state_modifiers[modifier_count];
+                var modifier_data = modifier.getModifierParams().modifier_data;
+                export_data.states[state.id].modifiers[modifier.id] = modifier_data;
+            }
+
+        }
+
+        console.log(export_data);
+
+    },
+
+    get_states: function(graph) {
+        var state_cells = [];
+        var graph_cells = graph.getCells();
+        for (var cell_count = 0; cell_count < graph_cells.length; cell_count++) {
+            var state = graph_cells[cell_count];
+            if (state.get('type') == 'qad.Question') {
+                state_cells.push(state);
+            }
+
+        }
+        return state_cells;
+    }
+}
+
+app.Factory = {
+
+    createStateFromParams: function(params) {
+        var state = {
+            obs: {},
+            initial_state: false
+        }
+        return state;
+    },
+
+    createModifierFromParams: function(type, params) {
+        var modifier = {
+            type: type || '',
+            params: params || {}
+        }
+        return modifier;
+    },
+
+    createModifierTypeOb: function(time_limit, transition_type, start_time, end_time, relative_amount) {
+        return this.createModifierFromParams("Ob", {
+            "time_limit": time_limit || 10,
+            "transition_type": transition_type || "linear",
+            "start_time": start_time || 0,
+            "end_time": end_time || 10,
+            "relative_amount": relative_amount || 0,
+        });
+    },
+
+    createTriggerFromParams: function(type, params) {
+        var trigger = {
+            type: type || '',
+            params: params || {}
+        }
+        return trigger;
+    },
+
+    createTriggerTypeTimeLimit: function(time_limit, linked_state) {
+        return this.createTriggerFromParams("TimeLimit", {
+            "time_limit": time_limit || 10,
+            "linked_state": linked_state || ''
+        });
+    },
+
+    createTriggerTypeGiveDrug: function(comparison, drug, dose, dose_unit, linked_state) {
+        return this.createTriggerFromParams("GiveDrug", {
+            "comparison": comparison || '',
+            "drug": drug || '',
+            "dose": dose || 0,
+            "dose_unit": dose_unit || '',
+            "linked_state": linked_state || ''
+        });
+    },
+
+    createTrigger: function(id, name) {
+
+        var q = new joint.shapes.qad.Trigger({
+            id: 'trigger-' + id,
+            attrs: {
+                '.trigger-text': {
+                    text: name
+                }
+            },
+            ports: {
+                groups: {
+                    'out': {
+                        position: 'right',
+                        attrs: {
+                            circle: {
+                                magnet: true,
+                                fill: '#feb663',
+                                r: 14
+                            }
+                        }
+                    }
+                },
+                items: [{
+                    id: 'trigger-port-' + id,
+                    group: 'out',
+                    args: {},
+                }]
+            },
+            trigger_data: app.Factory.createTriggerFromParams()
+        });
+        return q;
+    },
+
+    createModifier: function(id, name) {
+        var q = new joint.shapes.qad.Modifier({
+            id: 'option-' + id,
+            attrs: {
+                '.option-text': {
+                    text: name
+                }
+            },
+            modifier_data: app.Factory.createModifierFromParams()
+        });
+        return q;
+    },
+
+    createQuestion: function(text) {
+        var q = new joint.shapes.qad.Question({
+            position: {
+                x: 400 - 50,
+                y: 30
+            },
+            size: {
+                width: 100,
+                height: 70
+            },
+            question: text,
+            inPorts: [{
+                id: 'in',
+                label: 'In'
+            }],
+            options: [],
+            triggers: [],
+            state_data: app.Factory.createStateFromParams(text)
+        });
+        return q;
+    },
+
+    createLink: function(source, target) {
+
+        return new joint.dia.Link({
+            source: {
+                id: source
+            },
+            target: {
+                id: target
+            },
+            attrs: {
+                '.marker-target': {
+                    d: 'M 10 0 L 0 5 L 10 10 z',
+                    fill: '#6a6c8a',
+                    stroke: '#6a6c8a'
+                },
+                '.connection': {
+                    stroke: '#6a6c8a',
+                    'stroke-width': 2
+                }
+            }
+        });
+    },
+
+};
+
+app.Selection = Backbone.Collection.extend();
+app.SelectionView = Backbone.View.extend({
+
+    initialize: function(options) {
+        this.options = options;
+        _.bindAll(this, 'render');
+        this.listenTo(this.model, 'add reset change', this.render);
+        this.listenTo(this.model, 'remove', this.remove);
+    },
+
+    render: function() {
+
+        var paper = this.options.paper;
+
+        var boxTemplate = V('rect', {
+            fill: 'none',
+            'stroke': '#C6C7E2',
+            'stroke-width': 1,
+            'pointer-events': 'none'
+        });
+
+        //remove any existing boxes
+        _.invoke(this.boxes, 'remove');
+        this.boxes = [];
+
+        this.model.each(function(element) {
+            var box = boxTemplate.clone();
+            var p = 3; // Box padding.
+            box.attr(g.rect(_.extend({}, element.get('position'), element.get('size'))).moveAndExpand({
+                x: -p,
+                y: -p,
+                width: 2 * p,
+                height: 2 * p
+            }));
+            V(paper.viewport).append(box);
+            this.boxes.push(box);
+        }, this);
+
+        return this;
+    }
+});
+
+app.dictionary = {
+    "ob_names": {
+        "heart_rate": "Heart rate",
+        "foot_smell": "Foot smell",
+        "hair_loss": "Hair loss",
+    }
+}
+
+app.AppView = Backbone.View.extend({
+
+    el: '#app-container',
+
+    events: {
+        'click #add-state': 'addState',
+        'click #save-scenario': 'saveScenario',
+    },
+
+    initialize: function() {
+        this.initializePaper();
+        this.initializeSelection();
+        //this.initializeHalo();
+        //this.initializeInlineTextEditor();
+        this.initializeTooltips();
+    },
+
+    initializeTooltips: function() {
+
+        new joint.ui.Tooltip({
+            rootTarget: '#paper',
+            target: '.element',
+            content: _.bind(function(element) {
+
+                var cellView = this.paper.findView(element);
+                var cell = cellView.model;
+
+                var t = '- Double-click to edit text inline.';
+                if (cell.get('type') === 'qad.Question') {
+                    t += '<br/><br/>- Connect a port with another Question or an Answer.';
+                }
+
+                return t;
+
+            }, this),
+            direction: 'right',
+            right: '#paper',
+            padding: 20
+        });
+    },
+
+    initializeHalo: function() {
+
+        this.paper.on('cell:pointerup', function(cellView, evt) {
+
+            if (cellView.model instanceof joint.dia.Link) return;
+
+            var halo = new joint.ui.Halo({
+                graph: this.graph,
+                paper: this.paper,
+                cellView: cellView,
+                useModelGeometry: true,
+                type: 'toolbar'
+            });
+
+            // As we're using the FreeTransform plugin, there is no need for an extra resize tool in Halo.
+            // Therefore, remove the resize tool handle and reposition the clone tool handle to make the
+            // handles nicely spread around the elements.
+            halo.removeHandle('resize');
+            halo.removeHandle('rotate');
+            halo.removeHandle('fork');
+            halo.removeHandle('link');
+            //halo.changeHandle('clone', { position: 'se' });
+
+            halo.on('action:remove:pointerdown', function() {
+                this.selection.reset();
+            }, this);
+
+            halo.render();
+
+        }, this);
+    },
+
+    initializeSelection: function() {
+
+        var selection = this.selection = new app.Selection;
+
+        new app.SelectionView({
+            model: selection,
+            paper: this.paper
+        });
+
+        this.listenTo(this.paper, 'cell:pointerup', function(cellView) {
+            if (!cellView.model.isLink()) {
+                selection.reset([cellView.model]);
+            }
+        });
+
+        this.listenTo(this.paper, 'blank:pointerdown', function() {
+            selection.reset([]);
+        });
+
+        this.listenTo(selection, 'add reset', this.onSelectionChange);
+
+        /* my editor view */
+        app.editor = {
+            triggers: {},
+            modifiers: {},
+        };
+
+        app.editor.StateView = Backbone.View.extend({
+            el: "#element-type",
+            initialize: function() {
+                this.template = require('templates/state_parameters.jade');
+                this.render();
+            },
+            events: {
+                "keyup .ob-value": "onObValueChange",
+                "change #ob-select": "onObChange",
+                "keyup #state-name": "onTriggerNameChange",
+                "click #initial-state-check": "onInitialStateClicked",
+            },
+            onInitialStateClicked: function(evt) {
+                state_cells = app.helpers.get_states(this.model.graph);
+                state_cells.forEach(function(state) {
+                    state.disableInitialState();
+                });
+                if ($(evt.currentTarget).is(':checked')) this.model.enableInitialState();
+            },
+            onObValueChange: function(evt) {
+                var current_obs = this.model.getStateParams().state_data.obs;
+                var edited_ob_key = $(evt.currentTarget).data('obKey');
+                current_obs[edited_ob_key] = evt.currentTarget.value;
+            },
+            onObChange: function(evt) {
+                var current_obs = this.model.getStateParams().state_data.obs;
+                var selected_ob = $(evt.currentTarget.selectedOptions[0]);
+                var selected_ob_key = evt.currentTarget.value;
+
+                if (current_obs[selected_ob_key]) {
+                    $("#ob-value-" + selected_ob_key).focus();
+                } else {
+                    current_obs[selected_ob_key] = selected_ob.data('defaultValue');
+                    this.render();
+                }
+
+            },
+            onTriggerNameChange: function(evt) {
+                this.model.attr(".question-text", {
+                    text: evt.currentTarget.value
+                });
+            },
+            render: function() {
+                this.$el.html(this.template(this.model.getStateParams()));
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+        app.editor.ModifierView = Backbone.View.extend({
+            el: "#element-type",
+            events: {
+                "change #modifier-type": "onModifierTypeChange",
+                "change #modifier-name": "onModifierNameChange",
+                "keyup #modifier-name": "onModifierNameChange",
+            },
+            onModifierNameChange: function(evt) {
+                this.model.attr(".option-text", {
+                    text: evt.currentTarget.value
+                });
+            },
+            onModifierTypeChange: function(evt) {
+                if (evt.currentTarget.value != '') {
+                    var new_data = window.app.Factory["createModifierType" + evt.currentTarget.value]();
+                    this.model.set('modifier_data', new_data);
+                    this.createParametersView();
+                }
+            },
+            createParametersView: function(type) {
+                if (this.parameterView) this.parameterView.remove();
+                this.parameterView = new window.app.editor.modifiers[this.model.getModifierParams().modifier_data.type + "View"]({
+                    model: this.model.getModifierParams()
+                });
+            },
+            initialize: function() {
+                this.template = require('templates/modifier_type.jade');
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template(this.model.getModifierParams()));
+                if (this.model.getModifierParams().modifier_data.type != '') this.createParametersView();
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+        app.editor.EditableModifierView = Backbone.View.extend({
+            storeChangedValue: function(evt) {
+                this.model.modifier_data.params[evt.currentTarget.id] = evt.currentTarget.value;
+            },
+        });
+
+        app.editor.modifiers.ObView = app.editor.EditableModifierView.extend({
+            el: "#modifier-parameters",
+            events: {
+                "change .select-value-change": "storeChangedValue",
+                "keyup .keypress-value-change": "storeChangedValue",
+            },
+            initialize: function() {
+                this.template = require('templates/modifier_type_ob.jade');
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template(this.model));
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+        app.editor.TriggerView = Backbone.View.extend({
+            el: "#element-type",
+            events: {
+                "change #trigger-type": "onTriggerTypeChange",
+                "change #trigger-name": "onTriggerNameChange",
+                "keyup #trigger-name": "onTriggerNameChange",
+            },
+            initialize: function() {
+                this.template = require('templates/trigger_type.jade');
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template(this.model.getTriggerParams()));
+                if (this.model.getTriggerParams().trigger_data.type != '') this.createParametersView();
+            },
+            createParametersView: function(type) {
+                if (this.parameterView) this.parameterView.remove();
+                this.parameterView = new window["app"]["editor"]["triggers"][this.model.getTriggerParams().trigger_data.type + "View"]({
+                    model: this.model.getTriggerParams()
+                });
+            },
+            onTriggerTypeChange: function(evt) {
+                if (evt.currentTarget.value != '') {
+                    var new_data = window["app"]["Factory"]["createTriggerType" + evt.currentTarget.value]();
+                    this.model.set('trigger_data', new_data);
+                    this.createParametersView();
+                }
+            },
+            onTriggerNameChange: function(evt) {
+                this.model.attr(".trigger-text", {
+                    text: evt.currentTarget.value
+                });
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+
+        //Trigger classes
+        app.editor.EditableTriggerView = Backbone.View.extend({
+            storeChangedValue: function(evt) {
+                this.model.trigger_data.params[evt.currentTarget.id] = evt.currentTarget.value;
+            },
+        });
+
+        app.editor.triggers.TimeLimitView = app.editor.EditableTriggerView.extend({
+            el: "#trigger-parameters",
+            events: {
+                "keyup #time_limit": "storeChangedValue",
+            },
+            initialize: function() {
+                this.template = require('templates/trigger_type_time_limit.jade');
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template(this.model));
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+        app.editor.triggers.GiveDrugView = app.editor.EditableTriggerView.extend({
+            el: "#trigger-parameters",
+            events: {
+                "change #drug": "storeChangedValue",
+                "change #dose_unit": "storeChangedValue",
+                "change #comparison": "storeChangedValue",
+                "keyup #dose": "storeChangedValue",
+            },
+            initialize: function() {
+                this.template = require('templates/trigger_type_give_drug.jade');
+                this.render();
+            },
+            render: function() {
+                this.$el.html(this.template(this.model));
+            },
+            remove: function() {
+                this.$el.empty().off();
+                this.stopListening();
+                return this;
+            }
+        });
+
+
+    },
+
+    //Each trigger, modifier or whatever is going to have its own logic when it comes to how it manipulates the 
+    //data model of the selected element, therefore, each one will live in its own separate view
+    onSelectionChange: function(collection) {
+        var cell = collection.first();
+        if (cell) {
+            var view_type_class;
+            switch (cell.get('type')) {
+                case 'qad.Trigger':
+                    view_type_class = app.editor.TriggerView;
+                    break;
+                case 'qad.Question':
+                    view_type_class = app.editor.StateView;
+                    break;
+                case 'qad.Modifier':
+                    view_type_class = app.editor.ModifierView;
+            }
+
+            if (view_type_class) {
+                //Cleanup parent view if required
+                if (this.parent_view) this.parent_view.remove();
+                this.parent_view = new view_type_class({
+                    model: collection.first()
+                })
+            };
+
+        } else {
+            this.status('Selection emptied.');
+        }
+    },
+
+    initializePaper: function() {
+
+        this.graph = new joint.dia.Graph;
+
+        this.paper = new joint.dia.Paper({
+            el: this.$('#paper'),
+            model: this.graph,
+            width: 800,
+            height: 600,
+            gridSize: 10,
+            snapLinks: {
+                radius: 50
+            },
+            validateConnection: function(cellViewS, magnetS, cellViewT, magnetT, end, linkView) {
+                if (magnetS.getAttribute('port-group') !== magnetT.getAttribute('port-group')) return true;
+                return false;
+            },
+            validateMagnet: function(cellView, magnet) {
+                if (magnet.getAttribute('port-group') == 'out') return true;
+                return false;
+            },
+            defaultLink: new joint.dia.Link({
+                router: {
+                    name: 'metro'
+                },
+                connector: {
+                    name: 'rounded'
+                },
+                attrs: {
+                    '.marker-target': {
+                        d: 'M 10 0 L 0 5 L 10 10 z',
+                        fill: '#6a6c8a',
+                        stroke: '#6a6c8a'
+                    },
+                    '.connection': {
+                        stroke: '#6a6c8a',
+                        'stroke-width': 2
+                    }
+                }
+            })
+        });
+    },
+
+
+    // Show a message in the statusbar.
+    status: function(m) {
+        this.$('#statusbar .message').text(m);
+    },
+
+    addState: function() {
+        var q = app.Factory.createQuestion('Question');
+        this.graph.addCell(q);
+        this.status('Question added.');
+    },
+
+    saveScenario: function() {
+        console.log(app.helpers.export_to_scenario_json(this.graph));
+    },
+
+    clear: function() {
+        this.graph.clear();
+    },
+
+});
 
 $(function() {
 
