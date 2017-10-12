@@ -123,7 +123,7 @@ app.AppView = Backbone.View.extend({
         app.editor.StateView = Backbone.View.extend({
             el: "#element-type",
             initialize: function() {
-                this.template = _.template($('#state-parameters-template').html());
+                this.template = require('templates/state_parameters.jade');
                 this.render();
             },
             events: {
@@ -285,7 +285,7 @@ app.AppView = Backbone.View.extend({
                 "keyup #time_limit": "storeChangedValue",
             },
             initialize: function() {
-                this.template = _.template($('#trigger-type-time-limit-template').html());
+                this.template = require('templates/trigger_type_time_limit.jade');
                 this.render();
             },
             render: function() {
@@ -307,7 +307,7 @@ app.AppView = Backbone.View.extend({
                 "keyup #dose": "storeChangedValue",
             },
             initialize: function() {
-                this.template = _.template($('#trigger-type-give-drug-template').html());
+                this.template = require('templates/trigger_type_give_drug.jade')();
                 this.render();
             },
             render: function() {

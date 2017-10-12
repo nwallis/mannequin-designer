@@ -24,7 +24,7 @@ $(function() {
             }
         }
     }, {
-        markup: $.trim($("#trigger-template").html()),
+        markup: require('templates/trigger')(),
         getTriggerParams: function() {
             return {
                 trigger_data: this.get('trigger_data'),
@@ -55,7 +55,7 @@ $(function() {
             }
         }
     }, {
-        markup: $.trim($("#modifier-template").html()),
+        markup: require('templates/modifier')(),
         getModifierParams: function() {
             return {
                 modifier_data: this.get('modifier_data'),
@@ -259,11 +259,9 @@ $(function() {
             this.set('state_data', state_data);
         },
 
-        markup: $.trim($("#question-template").html()),
-
-        optionMarkup: $.trim($("#modifier-template").html()),
-
-        triggerMarkup: $.trim($("#trigger-template").html()),
+        markup: require('templates/question.jade')(),
+        optionMarkup: require('templates/trigger.jade')(),
+        triggerMarkup: require('templates/modifier.jade')(),
 
         initialize: function() {
             joint.dia.Element.prototype.initialize.apply(this, arguments);

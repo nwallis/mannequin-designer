@@ -1,0 +1,28 @@
+form
+  .form-group
+    label(for='state-name') State name
+    input#state-name.form-control(type='text', value=model_name)
+  .form-group
+    label.form-check-label(for='initial-state-check ') Initial state?
+      input#initial-state-check.form-check-input(type='checkbox')
+  .form-group
+    label(for='ob-select') Add ob
+    select#ob-select.form-control(name='')
+      option(value='') Please select...
+      option(value='heart_rate', data-default-value='0') Heart rate
+      option(value='foot_smell', data-default-value='10') Foot smell
+      option(value='hair_loss', data-default-value='22') Hair loss
+  .row
+    .col
+      table.table
+        thead.thead-inverse
+          tr
+            th Ob
+            th Value
+        tbody
+          - for(var ob in state_data.obs){
+            tr
+              td !{app.dictionary.ob_names[ob] || ob}
+              td
+                input.ob-value(id="ob-value-" + ob, type="text", data-ob-key=ob, value=state_data.obs[ob])
+          - }
