@@ -750,7 +750,7 @@ app.AppView = Backbone.View.extend({
                 "keyup #trigger-name": "onTriggerNameChange",
             },
             initialize: function() {
-                this.template = _.template($('#trigger-type-template').html());
+                this.template = require('templates/trigger_type.jade');
                 this.render();
             },
             render: function() {

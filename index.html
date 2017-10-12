@@ -35,7 +35,7 @@
       <div class="row">
         <div class="col">
           <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">Builder</a>
+            <a class="navbar-brand" href="#">Bar Fridges Australia Builder</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -67,68 +67,6 @@
         </div>
       </div>
     </section>
-
-
-    <script type="text/template" id="trigger-type-give-drug-template">
-      <div class="row">
-        <div class="col">
-          <label for="comparison">Comparison</label>
-          <select id="comparison">
-            <option value="">Please select...</option>
-            <option value="at_least" <%= (trigger_data.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
-            <option value="no_more_than" <%= (trigger_data.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
-            <option value="exactly" <%= (trigger_data.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="dose">Dose</label>
-          <input type="text" id="dose" placholder="Enter a value" value="<%= trigger_data.params.dose %>">
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="dose_unit">Unit</label>
-          <select id="dose_unit">
-            <option value="">Please select...</option>
-            <option value="mg" <%= (trigger_data.params.dose_unit == 'mg') ? "selected" : "" %>>mg</option>
-            <option value="kg" <%= (trigger_data.params.dose_unit == 'kg') ? "selected" : "" %>>kg</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="drug">Drug name</label>
-          <select id="drug" name="">
-            <option value="">Please select...</option>
-            <option value="panadol" <%= (trigger_data.params.drug == 'panadol') ? "selected" : "" %>>Panadol</option>
-            <option value="neurophen" <%= (trigger_data.params.drug == 'neurophen') ? "selected" : "" %>>Neurophen</option>
-          </select>
-        </div>
-      </div>
-    </script>
-
-
-    <script type="text/template" id="trigger-type-template">
-      <div class="row">
-        <div class="col">
-          <label for="trigger-name">Trigger name</label>
-          <input type="text" id="trigger-name" placeholder="trigger name" value="<%= model_name  %>" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="trigger-type">Trigger type</label>
-          <select id="trigger-type" name="">
-            <option value="">Please select..</option>
-            <option value="GiveDrug" <%= (trigger_data.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
-            <option value="TimeLimit" <%= (trigger_data.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
-          </select>
-        </div>
-      </div>
-      <div id="trigger-parameters"></div>
-    </script>
 
     <script type="text/template" id="modifier-type-template">
       <div class="row">

@@ -191,12 +191,30 @@ if (typeof define === 'function' && define.amd) {
 }
  });
 
+;require.define("templates/trigger_type.jade", function(exports, require, module) { var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (model_name, trigger_data) {
+buf.push("<div class=\"row\"><div class=\"col\"><label for=\"trigger-name\">Trigger name</label><input id=\"trigger-name\" type=\"text\" placeholder=\"Trigger name\"" + (jade.attr("value", model_name, true, false)) + "/></div></div><div class=\"row\"><div class=\"col\"><label for=\"trigger-type\">Trigger type </label><select id=\"trigger-type\"><option value=\"\">Please select...</option></option><option value=\"GiveDrug\"" + (jade.attr("selected", trigger_data.type=='GiveDrug', true, false)) + ">GiveDrug </option><option value=\"TimeLimit\"" + (jade.attr("selected", trigger_data.type=='TimeLimit', true, false)) + ">TimeLimit </option></select></div></div><div id=\"trigger-parameters\"></div>");}.call(this,"model_name" in locals_for_with?locals_for_with.model_name:typeof model_name!=="undefined"?model_name:undefined,"trigger_data" in locals_for_with?locals_for_with.trigger_data:typeof trigger_data!=="undefined"?trigger_data:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+ });
+
 ;require.define("templates/trigger_type_give_drug.jade", function(exports, require, module) { var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};
 var jade_interp;
-
-buf.push("<div class=\"row\"><div class=\"col\"><label for=\"comparison\">Comparison</label><select id=\"comparison\"><option value=\"\">Please select...</option></option><option value=\"at_least\"><%= (trigger_data.params.comparison == 'at_least') ? \"selected\" : \"\" %> >At least</option></option><option value=\"no_more_than\"><%= (trigger_data.params.comparison == 'no_more_than') ? \"selected\" : \"\" %> >No more than</option></option><option value=\"exactly\"><%= (trigger_data.params.comparison == 'exactly') ? \"selected\" : \"\" %> >Exactly</option></option></select></div></div>");;return buf.join("");
+;var locals_for_with = (locals || {});(function (trigger_data) {
+buf.push("<div class=\"row\"><div class=\"col\"><label for=\"comparison\">Comparison</label><select id=\"comparison\"><option value=\"\">Please select...</option></option><option value=\"at_least\"" + (jade.attr("selected", trigger_data.params.comparison=='at_least', true, false)) + ">At least</option><option value=\"exactly\"" + (jade.attr("selected", trigger_data.params.comparison=='exactly', true, false)) + ">Exactly</option><option value=\"no_more_than\"" + (jade.attr("selected", trigger_data.params.comparison=='no_more_than', true, false)) + ">No more than</option></select></div></div><div class=\"row\"><div class=\"col\"><label for=\"dose\">Dose <input id=\"dose\" type=\"text\" placeholder=\"Enter a value\"" + (jade.attr("value", trigger_data.params.dose, true, false)) + "/></label></div></div><div class=\"row\"><div class=\"col\"><label for=\"dose_unit\">Unit </label><select id=\"dose_unit\"><option value=\"\">Please select...</option><option value=\"mg\"" + (jade.attr("selected", trigger_data.params.dose_unit=='mg', true, false)) + ">mg </option><option value=\"kg\"" + (jade.attr("selected", trigger_data.params.dose_unit=='kg', true, false)) + ">kg </option></select></div></div><div class=\"row\"><div class=\"col\"><label for=\"drug_name\">Drug name</label><select id=\"drug\"><option value=\"\">Please select...</option><option value=\"panadol\"" + (jade.attr("selected", trigger_data.params.drug=='panadol', true, false)) + ">Panadol</option><option value=\"neurophen\"" + (jade.attr("selected", trigger_data.params.drug=='neurophen', true, false)) + ">Neurophen </option></select></div></div>");}.call(this,"trigger_data" in locals_for_with?locals_for_with.trigger_data:typeof trigger_data!=="undefined"?trigger_data:undefined));;return buf.join("");
 };
 if (typeof define === 'function' && define.amd) {
   define([], function() {

@@ -3,7 +3,24 @@
     label(for="comparison") Comparison
     select#comparison
       option(value="") Please select...</option>
-      option(value="at_least") <%= (trigger_data.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
-      option(value="no_more_than") <%= (trigger_data.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
-      option(value="exactly") <%= (trigger_data.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
-
+      option(value="at_least" selected=trigger_data.params.comparison=='at_least') At least
+      option(value="exactly" selected=trigger_data.params.comparison=='exactly') Exactly
+      option(value="no_more_than" selected=trigger_data.params.comparison=='no_more_than') No more than
+.row
+  .col
+    label(for="dose") Dose 
+      input#dose(type="text", placeholder="Enter a value", value=trigger_data.params.dose)
+.row
+  .col
+    label(for="dose_unit") Unit 
+    select#dose_unit
+      option(value="") Please select...
+      option(value="mg" selected=trigger_data.params.dose_unit=='mg') mg 
+      option(value="kg" selected=trigger_data.params.dose_unit=='kg') kg 
+.row
+  .col
+    label(for="drug_name") Drug name
+    select#drug
+      option(value="") Please select...
+      option(value="panadol" selected=trigger_data.params.drug=='panadol') Panadol
+      option(value="neurophen" selected=trigger_data.params.drug=='neurophen') Neurophen 
