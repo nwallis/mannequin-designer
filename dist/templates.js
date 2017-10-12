@@ -131,6 +131,24 @@ if (typeof define === 'function' && define.amd) {
 }
  });
 
+;require.define("templates/modifier_type.jade", function(exports, require, module) { var __templateData = function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var jade_interp;
+;var locals_for_with = (locals || {});(function (model_name, modifier_data) {
+buf.push("<div class=\"row\"><div class=\"col\"><label for=\"modifier-name\">Modifier name</label><input id=\"modifier-name\" type=\"text\" placeholder=\"Modifier name\"" + (jade.attr("value", model_name, true, false)) + "/></div></div><div class=\"row\"><div class=\"col\"><label for=\"modifier-type\">Modifier type </label><select id=\"modifier-type\"><option value=\"\">Please select...</option></option><option value=\"Ob\"" + (jade.attr("selected", modifier_data.type=='Ob', true, false)) + ">Ob </option></select></div></div><div id=\"modifier-parameters\"></div>");}.call(this,"model_name" in locals_for_with?locals_for_with.model_name:typeof model_name!=="undefined"?model_name:undefined,"modifier_data" in locals_for_with?locals_for_with.modifier_data:typeof modifier_data!=="undefined"?modifier_data:undefined));;return buf.join("");
+};
+if (typeof define === 'function' && define.amd) {
+  define([], function() {
+    return __templateData;
+  });
+} else if (typeof module === 'object' && module && module.exports) {
+  module.exports = __templateData;
+} else {
+  __templateData;
+}
+ });
+
 ;require.define("templates/question.jade", function(exports, require, module) { var __templateData = function template(locals) {
 var buf = [];
 var jade_mixins = {};

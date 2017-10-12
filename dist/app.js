@@ -702,7 +702,7 @@ app.AppView = Backbone.View.extend({
                 });
             },
             initialize: function() {
-                this.template = _.template($('#modifier-type-template').html());
+                this.template = require('templates/modifier_type.jade');
                 this.render();
             },
             render: function() {
