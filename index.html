@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
 
     <title>Mannequin Builder</title>
-    <link rel="stylesheet" type="text/css" href="css/rappid.min.css">
-    <link href="css/paper.css" rel="stylesheet"/>
-    <link href="css/tooltip.css" rel="stylesheet"/>
-    <link href="css/index.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/dist/designer.css">
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
 
     <script>
@@ -21,26 +18,21 @@
     <script src="node_modules/jquery/dist/jquery.js"></script>
     <script src="node_modules/lodash/index.js"></script>
     <script src="node_modules/backbone/backbone.js"></script>
-    <script src="node_modules/backbone/backbone.js"></script>
     <script src="node_modules/popper.js/dist/umd/popper.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="app/vendor/rappid.min.js"></script>
 
-    <script src="src/rappid.min.js"></script>
-    <script src="src/joint.shapes.qad.js"></script>
-    <script src="src/selection.js"></script>
-    <script src="src/factory.js"></script>
-    <script src="src/helpers.js"></script>
-    <script src="src/app.js"></script>
-    <script src="src/index.js"></script>
+    <script src="dist/templates.js"></script>
+    <script src="dist/app.js"></script>
 
   </head>
   <body>
 
-    <section id="app" class="container-fluid">
+    <section id="app-container" class="container-fluid">
       <div class="row">
         <div class="col">
           <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="#">Builder</a>
+            <a class="navbar-brand" href="#">Bar Fridges Australia Builder</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -72,207 +64,6 @@
         </div>
       </div>
     </section>
-
-    <script type="text/template" id="question-template">
-      <g class="rotatable">
-        <g class="scalable">
-          <rect class="body"/>
-        </g>
-        <text class="question-text"></text>
-        <path class="btn-add-modifier" d="M5,0 10,0 10,5 15,5 15,10 10,10 10,15 5,15 5,10 0,10 0,5 5,5z"/>
-        <path class="btn-add-trigger" d="M5,0 10,0 10,5 15,5 15,10 10,10 10,15 5,15 5,10 0,10 0,5 5,5z"/>
-      </g>
-    </script>
-
-    <script type="text/template" id="trigger-template">
-      <g class="rotatable trigger">
-        <g class="scalable">
-          <rect class="trigger-rect"></rect>
-        </g>
-        <path class="btn-remove-trigger" d="M0,0 15,0 15,5 0,5z"></path>
-        <text class="trigger-text"></text>
-      </g>
-    </script>
-
-    <script type="text/template" id="modifier-template">
-      <g class="rotatable option">
-        <g class="scalable">
-          <rect class="option-rect"></rect>
-        </g>
-        <path class="btn-remove-modifier" d="M0,0 15,0 15,5 0,5z"></path>
-        <text class="option-text"></text>
-      </g>
-    </script>
-
-    <script type="text/template" id="trigger-type-time-limit-template">
-      <label for="time_limit">Duration</label>
-      <input type="text" id="time_limit" value="<%= trigger_data.params.time_limit %>">
-    </script>
-
-    <script type="text/template" id="trigger-type-give-drug-template">
-      <div class="row">
-        <div class="col">
-          <label for="comparison">Comparison</label>
-          <select id="comparison">
-            <option value="">Please select...</option>
-            <option value="at_least" <%= (trigger_data.params.comparison == 'at_least') ? "selected" : "" %> >At least</option>
-            <option value="no_more_than" <%= (trigger_data.params.comparison == 'no_more_than') ? "selected" : "" %> >No more than</option>
-            <option value="exactly" <%= (trigger_data.params.comparison == 'exactly') ? "selected" : "" %> >Exactly</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="dose">Dose</label>
-          <input type="text" id="dose" placholder="Enter a value" value="<%= trigger_data.params.dose %>">
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="dose_unit">Unit</label>
-          <select id="dose_unit">
-            <option value="">Please select...</option>
-            <option value="mg" <%= (trigger_data.params.dose_unit == 'mg') ? "selected" : "" %>>mg</option>
-            <option value="kg" <%= (trigger_data.params.dose_unit == 'kg') ? "selected" : "" %>>kg</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="drug">Drug name</label>
-          <select id="drug" name="">
-            <option value="">Please select...</option>
-            <option value="panadol" <%= (trigger_data.params.drug == 'panadol') ? "selected" : "" %>>Panadol</option>
-            <option value="neurophen" <%= (trigger_data.params.drug == 'neurophen') ? "selected" : "" %>>Neurophen</option>
-          </select>
-        </div>
-      </div>
-    </script>
-
-    <script type="text/template" id="state-parameters-template">
-      <form>
-        <div class="form-group">
-          <label for="state-name">State name</label>
-          <input class="form-control" type="text" id="state-name" value="<%= model_name %>"/>
-        </div>
-        <div class="form-group">
-          <label class="form-check-label" for="initial-state-check ">
-            <input type="checkbox" id="initial-state-check" class="form-check-input"/>
-            Initial state?
-          </label>
-        </div>
-        <div class="form-group">
-          <label for="ob-select">Add ob</label>
-          <select id="ob-select" name="" class="form-control">
-            <option value="">Please select...</option>
-            <option value="heart_rate" data-default-value="0">Heart rate</option>
-            <option value="foot_smell" data-default-value="10">Foot smell</option>
-            <option value="hair_loss" data-default-value="22">Hair loss</option>
-          </select>
-        </div>
-        <div class="row">
-          <div class="col">
-            <table class="table" >
-              <thead class="thead-inverse">
-                <tr>
-                  <th>Ob</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% for(var ob in state_data.obs){  %>
-                <tr>
-                  <td><%= app.dictionary.ob_names[ob] || ob %></td> 
-                  <td><input type="text" id="ob-value-<%= ob %>" class="ob-value" data-ob-key="<%= ob %>" value="<%= state_data.obs[ob] %>"/></td>
-                </tr>
-                <% } %>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </form>
-    </script>
-
-    <script type="text/template" id="trigger-type-template">
-      <div class="row">
-        <div class="col">
-          <label for="trigger-name">Trigger name</label>
-          <input type="text" id="trigger-name" placeholder="trigger name" value="<%= model_name  %>" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="trigger-type">Trigger type</label>
-          <select id="trigger-type" name="">
-            <option value="">Please select..</option>
-            <option value="GiveDrug" <%= (trigger_data.type == 'GiveDrug') ? "selected" : "" %>>Patient given drug</option>
-            <option value="TimeLimit" <%= (trigger_data.type == 'TimeLimit') ? "selected" : "" %>>Time limit</option>
-          </select>
-        </div>
-      </div>
-      <div id="trigger-parameters"></div>
-    </script>
-
-    <script type="text/template" id="modifier-type-template">
-      <div class="row">
-        <div class="col">
-          <label for="modifier-name">Modifier name</label>
-          <input type="text" id="modifier-name" value="<%= model_name  %>" />
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="modifier-type">Modifier type</label>
-          <select id="modifier-type" name="">
-            <option value="">Please select..</option>
-            <option value="Ob" <%= (modifier_data.type == 'Ob') ? "selected" : "" %>>Ob</option>
-          </select>
-        </div>
-      </div>
-      <div id="modifier-parameters"></div>
-    </script>
-
-    <script type="text/template" id="modifier-type-ob-template"> 
-      <div class="row">
-        <div class="col">
-          <label for="transition_type">Ob to modify</label>
-          <select id="ob_property" class="select-value-change">
-            <option value="">Please select...</option>
-            <option value="heart_rate" <%= (modifier_data.params.transition_type == 'heart_rate') ? "selected" : "" %> >Heart rate</option>
-            <option value="foot_smell" <%= (modifier_data.params.transition_type == 'foot_smell') ? "selected" : "" %> >Foot smell</option>
-            <option value="hair_loss" <%= (modifier_data.params.transition_type == 'hair_loss') ? "selected" : "" %> >Hair loss</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="transition_type">Transition type</label>
-          <select id="transition_type" class="select-value-change">
-            <option value="">Please select...</option>
-            <option value="linear" <%= (modifier_data.params.transition_type == 'linear') ? "selected" : "" %> >Linear</option>
-            <option value="exponential" <%= (modifier_data.params.transition_type == 'exponential') ? "selected" : "" %> >Exponential</option>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="start_time">Start time</label>
-          <input type="text" id="start_time" class="keypress-value-change" placholder="Enter a value" value="<%= modifier_data.params.start_time %>">
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="end_time">End time</label>
-          <input type="text" id="end_time" class="keypress-value-change" placholder="Enter a value" value="<%= modifier_data.params.end_time %>">
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <label for="relative-amount">Amount</label>
-          <input type="text" id="relative_amount" class="keypress-value-change" placholder="Enter a value" value="<%= modifier_data.params.relative_amount %>">
-        </div>
-      </div>
-    </script>
 
   </body>
 </html>

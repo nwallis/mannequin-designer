@@ -1,0 +1,12 @@
+.row
+  .col
+    label(for="trigger-name") Trigger name
+    input#trigger-name(type="text" placeholder="Trigger name", value=model_name)
+.row
+  .col
+    label(for="trigger-type") Trigger type 
+    select#trigger-type
+      option(value="") Please select...</option>
+      option(value="GiveDrug" selected=trigger_data.type=='GiveDrug') GiveDrug 
+      option(value="TimeLimit" selected=trigger_data.type=='TimeLimit') TimeLimit 
+#trigger-parameters

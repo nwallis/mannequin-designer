@@ -1,0 +1,11 @@
+.row
+  .col
+    label(for="modifier-name") Modifier name
+    input#modifier-name(type="text" placeholder="Modifier name", value=model_name)
+.row
+  .col
+    label(for="modifier-type") Modifier type 
+    select#modifier-type
+      option(value="") Please select...</option>
+      option(value="Ob" selected=modifier_data.type=='Ob') Ob 
+#modifier-parameters

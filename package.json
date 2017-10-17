@@ -40,5 +40,7 @@
     "popper.js": "^1.12.5",
     "ws": "0.8.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jade-brunch": "^2.8.0"
+  }
 }
