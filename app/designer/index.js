@@ -33,7 +33,7 @@ app.helpers = {
 
             var state_triggers = state.get('triggers');
             for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
-                var trigger = state_triggers[trigger_count];
+                var trigger = graph.getCell(state_triggers[trigger_count]);
                 var trigger_data = trigger.getTriggerParams().trigger_data;
                 if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
                 export_data.states[state.id].triggers[trigger.id] = trigger_data;
@@ -41,8 +41,7 @@ app.helpers = {
 
             var state_modifiers = state.get('options');
             for (var modifier_count = 0; modifier_count < state_modifiers.length; modifier_count++) {
-                var modifier = state_modifiers[modifier_count];
-                console.log(modifier);
+                var modifier = graph.getCell(state_modifiers[modifier_count]);
                 var modifier_data = modifier.getModifierParams().modifier_data;
                 export_data.states[state.id].modifiers[modifier.id] = modifier_data;
             }
