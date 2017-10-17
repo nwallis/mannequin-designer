@@ -102,11 +102,12 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
     },
 
     layoutTriggers: function() {
-        var options = this.model.get('triggers');
+        var triggers = this.model.get('triggers');
         var optionHeight = this.model.get('optionHeight');
         var offsetY = 70 + (this.model.get('options').length * optionHeight);
-        _.each(options, function(option) {
-            option.position(0, offsetY, {
+        _.each(triggers, function(trigger) {
+            var cell = this.model.graph.getCell(trigger);
+            cell.position(0, offsetY, {
                 parentRelative: true
             });
             offsetY += optionHeight;
@@ -118,7 +119,8 @@ joint.shapes.qad.QuestionView = joint.dia.ElementView.extend({
         var optionHeight = this.model.get('optionHeight');
         var offsetY = 50;
         _.each(options, function(option) {
-            option.position(0, offsetY, {
+            var cell = this.model.graph.getCell(option);
+            cell.position(0, offsetY, {
                 parentRelative: true
             });
             offsetY += optionHeight;

@@ -33,7 +33,7 @@ app.helpers = {
 
             var state_triggers = state.get('triggers');
             for (var trigger_count = 0; trigger_count < state_triggers.length; trigger_count++) {
-                var trigger = state_triggers[trigger_count];
+                var trigger = graph.getCell(state_triggers[trigger_count]);
                 var trigger_data = trigger.getTriggerParams().trigger_data;
                 if (link_lookup[trigger.id]) trigger_data.params["linked_state"] = link_lookup[trigger.id];
                 export_data.states[state.id].triggers[trigger.id] = trigger_data;
@@ -41,7 +41,7 @@ app.helpers = {
 
             var state_modifiers = state.get('options');
             for (var modifier_count = 0; modifier_count < state_modifiers.length; modifier_count++) {
-                var modifier = state_modifiers[modifier_count];
+                var modifier = graph.getCell(state_modifiers[modifier_count]);
                 var modifier_data = modifier.getModifierParams().modifier_data;
                 export_data.states[state.id].modifiers[modifier.id] = modifier_data;
             }
@@ -120,8 +120,7 @@ app.Factory = {
     },
 
     createTrigger: function(id, name) {
-
-        var q = new joint.shapes.qad.Trigger({
+        return {
             id: 'trigger-' + id,
             attrs: {
                 '.trigger-text': {
@@ -148,12 +147,11 @@ app.Factory = {
                 }]
             },
             trigger_data: app.Factory.createTriggerFromParams()
-        });
-        return q;
+        };
     },
 
     createModifier: function(id, name) {
-        var q = new joint.shapes.qad.Modifier({
+        return {
             id: 'option-' + id,
             attrs: {
                 '.option-text': {
@@ -161,8 +159,7 @@ app.Factory = {
                 }
             },
             modifier_data: app.Factory.createModifierFromParams()
-        });
-        return q;
+        };
     },
 
     createQuestion: function(text) {
@@ -959,7 +956,7 @@ $(function() {
 
         initialize: function() {
             joint.dia.Element.prototype.initialize.apply(this, arguments);
-            this.listenTo(this, 'change:options', this.autoresize, this);
+            this.listenTo(this, 'change:options', this.onChangeModifiers, this);
             this.listenTo(this, 'change:triggers', this.autoresize, this);
             this.on('change:question', function() {
                 this.attr('.question-text/text', this.get('question') || '');
@@ -978,6 +975,12 @@ $(function() {
             this.attr('.question-text/text', this.get('question'), {
                 silent: true
             });
+        },
+
+        onChangeModifiers: function(e, f, g, h) {
+            var modifiers = this.get("options");
+            _.each(modifiers, function(modifier) {}, this);
+            this.autoresize();
         },
 
         onChangeTriggers: function() {
@@ -1048,16 +1051,18 @@ $(function() {
         },
 
         addModifier: function() {
-            var new_modifier = app.Factory.createModifier(_.uniqueId(), "Modifier " + this.get('options').length);
-            this.addElementToStore('options', new_modifier);
-            this.graph.addCell(new_modifier);
-            this.embed(new_modifier);
+            var modifier_model = app.Factory.createModifier(_.uniqueId(), "Modifier " + this.get('options').length);
+            this.addElementToStore('options', modifier_model.id);
+            var modifier_view = new joint.shapes.qad.Modifier(modifier_model);
+            this.graph.addCell(modifier_view);
+            this.embed(modifier_view);
         },
         addTrigger: function() {
-            var new_trigger = app.Factory.createTrigger(_.uniqueId(), "Trigger " + this.get('triggers').length);
-            this.addElementToStore('triggers', new_trigger);
-            this.graph.addCell(new_trigger);
-            this.embed(new_trigger);
+            var trigger_model = app.Factory.createTrigger(_.uniqueId(), "Trigger " + this.get('triggers').length);
+            this.addElementToStore('triggers', trigger_model.id);
+            var trigger_view = new joint.shapes.qad.Trigger(trigger_model);
+            this.graph.addCell(trigger_view);
+            this.embed(trigger_view);
         },
         removeElementById: function(id, storage_key) {
             var data_store = this.get(storage_key);
