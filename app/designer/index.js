@@ -48,7 +48,7 @@ app.helpers = {
 
         }
 
-        console.log(export_data);
+        return export_data;
 
     },
 
@@ -375,7 +375,7 @@ app.AppView = Backbone.View.extend({
                 "click #initial-state-check": "onInitialStateClicked",
             },
             onInitialStateClicked: function(evt) {
-                state_cells = app.helpers.get_states(this.model.graph);
+                var state_cells = app.helpers.get_states(this.model.graph);
                 state_cells.forEach(function(state) {
                     state.disableInitialState();
                 });
@@ -384,7 +384,9 @@ app.AppView = Backbone.View.extend({
             onObValueChange: function(evt) {
                 var current_obs = this.model.getStateParams().state_data.obs;
                 var edited_ob_key = $(evt.currentTarget).data('obKey');
-                current_obs[edited_ob_key] = evt.currentTarget.value;
+                var enteredValue = evt.currentTarget.value;
+                var newValue = isNaN(parseInt(enteredValue)) ? enteredValue : parseInt(enteredValue);
+                current_obs[edited_ob_key] = newValue;
             },
             onObChange: function(evt) {
                 var current_obs = this.model.getStateParams().state_data.obs;
@@ -456,7 +458,9 @@ app.AppView = Backbone.View.extend({
 
         app.editor.EditableModifierView = Backbone.View.extend({
             storeChangedValue: function(evt) {
-                this.model.modifier_data.params[evt.currentTarget.id] = evt.currentTarget.value;
+                var enteredValue = evt.currentTarget.value;
+                var newValue = isNaN(parseInt(enteredValue)) ? enteredValue : parseInt(enteredValue);
+                this.model.modifier_data.params[evt.currentTarget.id] = newValue;
             },
         });
 
@@ -524,7 +528,9 @@ app.AppView = Backbone.View.extend({
         //Trigger classes
         app.editor.EditableTriggerView = Backbone.View.extend({
             storeChangedValue: function(evt) {
-                this.model.trigger_data.params[evt.currentTarget.id] = evt.currentTarget.value;
+                var enteredValue = evt.currentTarget.value;
+                var newValue = isNaN(parseInt(enteredValue)) ? enteredValue : parseInt(enteredValue);
+                this.model.trigger_data.params[evt.currentTarget.id] = newValue;
             },
         });
 
@@ -658,7 +664,28 @@ app.AppView = Backbone.View.extend({
     },
 
     saveScenario: function() {
-        console.log(app.helpers.export_to_scenario_json(this.graph));
+        var graph = this.graph;
+        var csrf = document.querySelector("meta[name=csrf]").content;
+        var scenario_data = {
+            scenario: {
+                name: "ux designed scenario",
+                data: JSON.stringify(app.helpers.export_to_scenario_json(graph)),
+                rappid_data: JSON.stringify(graph.toJSON())
+            }
+        }
+
+        $.ajax({
+            url: "/scenarios",
+            type: "post",
+            data: scenario_data,
+            headers: {
+                "X-CSRF-TOKEN": csrf
+            },
+            dataType: "json",
+            success: function(data) {
+                console.log(data);
+            }
+        });
     },
 
     clear: function() {
@@ -1033,7 +1060,7 @@ $(function() {
             this.embed(new_trigger);
         },
         removeElementById: function(id, storage_key) {
-            data_store = this.get(storage_key);
+            var data_store = this.get(storage_key);
             this.removePort(id);
             data_store = _.without(data_store, _.findWhere(data_store, {
                 id: id
